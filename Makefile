@@ -1,12 +1,12 @@
 
 # Toggle timing (1=enabled, 0=disabled) across all builds
-TIMING ?= 0
+TIMING ?= 1
 TIMING_FLAG = -D ENABLE_TIMING=$(TIMING)
 
 # compilers and flags
-CC      ?= gcc
+CC      := icx
 MPICC   ?= mpicc
-CFLAGS  ?= -O2 -std=c11 -Wall -Wextra $(TIMING_FLAG)
+CFLAGS  ?= -g $(TIMING_FLAG)
 LDFLAGS ?=
 
 # source folder and binary output folder
@@ -33,13 +33,13 @@ dirs:
 	@mkdir -p $(BIN_DIR)
 
 seq: $(SEQ_SRC)
-	$(CC) $(CFLAGS) $(TIMING_FLAG) $< -o $(SEQ_BIN) $(LDFLAGS)
+	$(CC) $(CFLAGS) $< -o $(SEQ_BIN) $(LDFLAGS)
 
 omp: $(OMP_SRC)
-	$(CC) $(CFLAGS) $(TIMING_FLAG) -fopenmp $< -o $(OMP_BIN) $(LDFLAGS)
+	$(CC) $(CFLAGS) -fopenmp $< -o $(OMP_BIN) $(LDFLAGS)
 
 mpi: $(MPI_SRC)
-	$(MPICC) $(filter-out -fopenmp,$(CFLAGS)) $(TIMING_FLAG) $< -o $(MPI_BIN) $(LDFLAGS)
+	$(MPICC) $(CFLAGS) 	$< -o $(MPI_BIN) $(LDFLAGS)
 
 # remove binaries
 clean:
