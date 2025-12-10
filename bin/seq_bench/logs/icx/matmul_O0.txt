@@ -1,0 +1,69 @@
+========================================
+BENCHMARK RESULTS: matmul_O0
+========================================
+
+Compiler: icx
+Compiler Version: Intel(R) oneAPI DPC++/C++ Compiler 2023.2.0 (2023.2.0.20230721)
+Flags: -O0
+Common Flags: -std=c11 -Wall -DENABLE_TIMING=1
+Full Command: icx -std=c11 -Wall -DENABLE_TIMING=1 -O0 src/matmul.c -o bin/seq_bench/icx/matmul_O0 -lm
+
+Binary Size: 15.90 KB
+Compile Time: .135561554 s
+
+Matrix Size: 5000 x 5000
+Benchmark Runs: 5 (+ 1 warmup)
+
+----------------------------------------
+EXECUTION TIMES
+----------------------------------------
+Run 1: 167.240 s
+Run 2: 167.028 s
+Run 3: 167.012 s
+Run 4: 167.294 s
+Run 5: 167.405 s
+
+----------------------------------------
+STATISTICS
+----------------------------------------
+Mean Time:   167.195800 s
+Min Time:    167.012 s
+Max Time:    167.405 s
+Std Dev:     .1712460218 s
+GFLOP/s:     1.495
+
+----------------------------------------
+ADDITIONAL INFO
+----------------------------------------
+
+Binary file info:
+bin/seq_bench/icx/matmul_O0: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, not stripped
+
+Binary sections (size):
+   text	   data	    bss	    dec	    hex	filename
+   2566	    632	     16	   3214	    c8e	bin/seq_bench/icx/matmul_O0
+
+----------------------------------------
+VECTORIZATION ANALYSIS
+----------------------------------------
+Vectorization Summary: Report not available
+Full report: bin/seq_bench/logs/icx/vec_reports/matmul_O0_vec.txt
+
+----------------------------------------
+ASSEMBLY ANALYSIS
+----------------------------------------
+SIMD Instruction Counts:
+  SSE instructions:    14
+  AVX instructions:    0
+  AVX-512 instructions: 0
+  FMA instructions:    0
+  Scalar FP ops:       3
+
+Full disassembly: bin/seq_bench/logs/icx/asm/matmul_O0.asm
+
+----------------------------------------
+CORRECTNESS CHECK
+----------------------------------------
+Status: PASS
+Checksum: b5778464ceb7ad651cf1d6118fd279af
+Reference Checksum: b5778464ceb7ad651cf1d6118fd279af

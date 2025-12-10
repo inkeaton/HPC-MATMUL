@@ -1,4 +1,4 @@
-#define n 2000
+#define n 5000
 
 // guard
 #ifndef ENABLE_TIMING

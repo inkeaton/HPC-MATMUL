@@ -1,0 +1,31 @@
+src/matmul.c:54:22: missed: couldn't vectorize loop
+src/matmul.c:56:10: missed: statement clobbers memory: fprintf (f_55, "%.0f ", _24);
+src/matmul.c:55:25: missed: couldn't vectorize loop
+src/matmul.c:56:10: missed: statement clobbers memory: fprintf (f_55, "%.0f ", _24);
+src/matmul.c:34:22: missed: couldn't vectorize loop
+src/matmul.c:34:22: missed: not vectorized: multiple nested loops.
+src/matmul.c:35:25: missed: couldn't vectorize loop
+src/matmul.c:37:28: missed: not vectorized: complicated access pattern.
+src/matmul.c:36:28: optimized: loop vectorized using 16 byte vectors
+src/matmul.c:20:22: missed: couldn't vectorize loop
+src/matmul.c:23:18: missed: not vectorized: complicated access pattern.
+src/matmul.c:21:25: optimized: loop vectorized using 16 byte vectors
+src/matmul.c:20:22: missed: couldn't vectorize loop
+src/matmul.c:22:18: missed: not vectorized: complicated access pattern.
+src/matmul.c:21:25: optimized: loop vectorized using 16 byte vectors
+src/matmul.c:15:21: missed: statement clobbers memory: a_43 = malloc (200000000);
+src/matmul.c:16:21: missed: statement clobbers memory: b_45 = malloc (200000000);
+src/matmul.c:17:21: missed: statement clobbers memory: c_47 = malloc (200000000);
+src/matmul.c:24:18: missed: statement clobbers memory: __builtin_memset (c_47, 0, 200000000);
+src/matmul.c:30:14: missed: statement clobbers memory: time_49 = clock ();
+src/matmul.c:41:14: missed: statement clobbers memory: _18 = clock ();
+src/matmul.c:43:7: missed: statement clobbers memory: fprintf (stderr.0_20, "[seq] n=%d elapsed=%.3f s\n", 5000, time_taken_52);
+src/matmul.c:47:14: missed: statement clobbers memory: f_55 = fopen ("mat-res.txt", "w");
+src/matmul.c:53:4: missed: statement clobbers memory: fprintf (f_55, "%d\n\n", 5000);
+src/matmul.c:56:10: missed: statement clobbers memory: fprintf (f_55, "%.0f ", _24);
+src/matmul.c:58:7: missed: statement clobbers memory: __builtin_fputc (10, f_55);
+src/matmul.c:61:4: missed: statement clobbers memory: fclose (f_55);
+src/matmul.c:64:4: missed: statement clobbers memory: free (a_43);
+src/matmul.c:65:4: missed: statement clobbers memory: free (b_45);
+src/matmul.c:66:4: missed: statement clobbers memory: free (c_47);
+src/matmul.c:49:7: missed: statement clobbers memory: perror ("fopen");

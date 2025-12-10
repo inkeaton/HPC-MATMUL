@@ -1,0 +1,69 @@
+========================================
+BENCHMARK RESULTS: matmul_O3_native
+========================================
+
+Compiler: gcc
+Compiler Version: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+Flags: -O3 -march=native
+Common Flags: -std=c11 -Wall -DENABLE_TIMING=1
+Full Command: gcc -std=c11 -Wall -DENABLE_TIMING=1 -O3 -march=native src/matmul.c -o bin/seq_bench/gcc/matmul_O3_native -lm
+
+Binary Size: 16.02 KB
+Compile Time: .059308290 s
+
+Matrix Size: 5000 x 5000
+Benchmark Runs: 5 (+ 1 warmup)
+
+----------------------------------------
+EXECUTION TIMES
+----------------------------------------
+Run 1: 36.199 s
+Run 2: 36.522 s
+Run 3: 36.916 s
+Run 4: 36.461 s
+Run 5: 36.332 s
+
+----------------------------------------
+STATISTICS
+----------------------------------------
+Mean Time:   36.486000 s
+Min Time:    36.199 s
+Max Time:    36.916 s
+Std Dev:     .2706039541 s
+GFLOP/s:     6.851
+
+----------------------------------------
+ADDITIONAL INFO
+----------------------------------------
+
+Binary file info:
+bin/seq_bench/gcc/matmul_O3_native: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=277bf6babcb301d1bb57aff864a7daed3080c409, for GNU/Linux 3.2.0, not stripped
+
+Binary sections (size):
+   text	   data	    bss	    dec	    hex	filename
+   2715	    648	     16	   3379	    d33	bin/seq_bench/gcc/matmul_O3_native
+
+----------------------------------------
+VECTORIZATION ANALYSIS
+----------------------------------------
+Vectorization Summary: Vectorized: 3, Missed: 28
+Full report: bin/seq_bench/logs/gcc/vec_reports/matmul_O3_native_vec.txt
+
+----------------------------------------
+ASSEMBLY ANALYSIS
+----------------------------------------
+SIMD Instruction Counts:
+  SSE instructions:    14
+  AVX instructions:    13
+  AVX-512 instructions: 0
+  FMA instructions:    0
+  Scalar FP ops:       1
+
+Full disassembly: bin/seq_bench/logs/gcc/asm/matmul_O3_native.asm
+
+----------------------------------------
+CORRECTNESS CHECK
+----------------------------------------
+Status: PASS
+Checksum: b5778464ceb7ad651cf1d6118fd279af
+Reference Checksum: b5778464ceb7ad651cf1d6118fd279af

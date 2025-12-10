@@ -1,0 +1,71 @@
+========================================
+BENCHMARK RESULTS: matmul_O0
+========================================
+
+Compiler: icc
+Compiler Version: icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+Flags: -O0
+Common Flags: -std=c11 -Wall -DENABLE_TIMING=1
+Full Command: icc -std=c11 -Wall -DENABLE_TIMING=1 -O0 src/matmul.c -o bin/seq_bench/icc/matmul_O0 -lm
+
+Binary Size: 15.99 KB
+Compile Time: .155335241 s
+
+Matrix Size: 5000 x 5000
+Benchmark Runs: 5 (+ 1 warmup)
+
+----------------------------------------
+EXECUTION TIMES
+----------------------------------------
+Run 1: 255.144 s
+Run 2: 255.457 s
+Run 3: 255.176 s
+Run 4: 255.317 s
+Run 5: 255.393 s
+
+----------------------------------------
+STATISTICS
+----------------------------------------
+Mean Time:   255.297400 s
+Min Time:    255.144 s
+Max Time:    255.457 s
+Std Dev:     .1353377257 s
+GFLOP/s:     .979
+
+----------------------------------------
+ADDITIONAL INFO
+----------------------------------------
+
+Binary file info:
+bin/seq_bench/icc/matmul_O0: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=55995892af244b77bd98202f8b324d840379939b, for GNU/Linux 3.2.0, not stripped
+
+Binary sections (size):
+   text	   data	    bss	    dec	    hex	filename
+   3089	    664	     16	   3769	    eb9	bin/seq_bench/icc/matmul_O0
+
+----------------------------------------
+VECTORIZATION ANALYSIS
+----------------------------------------
+Vectorization Summary: Vectorized: 0
+0, Not vectorized: 0
+0
+Full report: bin/seq_bench/logs/icc/vec_reports/matmul_O0_vec.txt
+
+----------------------------------------
+ASSEMBLY ANALYSIS
+----------------------------------------
+SIMD Instruction Counts:
+  SSE instructions:    15
+  AVX instructions:    0
+  AVX-512 instructions: 0
+  FMA instructions:    0
+  Scalar FP ops:       3
+
+Full disassembly: bin/seq_bench/logs/icc/asm/matmul_O0.asm
+
+----------------------------------------
+CORRECTNESS CHECK
+----------------------------------------
+Status: PASS
+Checksum: b5778464ceb7ad651cf1d6118fd279af
+Reference Checksum: b5778464ceb7ad651cf1d6118fd279af

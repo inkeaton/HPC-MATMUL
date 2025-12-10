@@ -1,0 +1,322 @@
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./scripts/bench_seq.sh 
+
+══════════════════════════════════════════════════════════════════════
+║             Sequential Matrix Multiplication Benchmark             ║
+══════════════════════════════════════════════════════════════════════
+
+▶ Configuration
+──────────────────────────────────────────────────
+[INFO] Source file: src/matmul.c
+[INFO] Benchmark runs: 5 (+ 1 warmup)
+[INFO] Output directory: bin/seq_bench
+[INFO] Matrix size: 5000 x 5000
+[✓] Created output directories
+
+▶ System Information
+──────────────────────────────────────────────────
+[INFO] CPU: 12th Gen Intel(R) Core(TM) i9-12900K
+[INFO] Cores: 24
+[INFO] Cache: L1d=640 KiB (16 instances), L2=14 MiB (10 instances), L3=30 MiB (1 instance)
+[✓] Saved system info to bin/seq_bench/logs/system_info.txt
+
+▶ Checking Compilers
+──────────────────────────────────────────────────
+[✓] gcc: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./scripts/bench_seq.sh 
+
+══════════════════════════════════════════════════════════════════════
+║             Sequential Matrix Multiplication Benchmark             ║
+══════════════════════════════════════════════════════════════════════
+
+▶ Configuration
+──────────────────────────────────────────────────
+[INFO] Source file: src/matmul.c
+[INFO] Benchmark runs: 5 (+ 1 warmup)
+[INFO] Output directory: bin/seq_bench
+[INFO] Matrix size: 5000 x 5000
+[✓] Created output directories
+
+▶ System Information
+──────────────────────────────────────────────────
+[INFO] CPU: 12th Gen Intel(R) Core(TM) i9-12900K
+[INFO] Cores: 24
+[INFO] Cache: L1d=640 KiB (16 instances), L2=14 MiB (10 instances), L3=30 MiB (1 instance)
+[✓] Saved system info to bin/seq_bench/logs/system_info.txt
+
+▶ Checking Compilers
+──────────────────────────────────────────────────
+[✓] gcc: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./scripts/bench_seq.sh 
+
+══════════════════════════════════════════════════════════════════════
+║             Sequential Matrix Multiplication Benchmark             ║
+══════════════════════════════════════════════════════════════════════
+
+▶ Configuration
+──────────────────────────────────────────────────
+[INFO] Source file: src/matmul.c
+[INFO] Benchmark runs: 5 (+ 1 warmup)
+[INFO] Output directory: bin/seq_bench
+[INFO] Matrix size: 5000 x 5000
+[✓] Created output directories
+
+▶ System Information
+──────────────────────────────────────────────────
+[INFO] CPU: 12th Gen Intel(R) Core(TM) i9-12900K
+[INFO] Cores: 24
+[INFO] Cache: L1d=640 KiB (16 instances), L2=14 MiB (10 instances), L3=30 MiB (1 instance)
+[✓] Saved system info to bin/seq_bench/logs/system_info.txt
+
+▶ Checking Compilers
+──────────────────────────────────────────────────
+[✓] gcc: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ bc
+bc 1.07.1
+Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006, 2008, 2012-2017 Free Software Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty'. 
+^C
+(interrupt) use quit to exit.
+^C
+(interrupt) use quit to exit.
+^C
+(interrupt) use quit to exit.
+quit
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ make seq
+icx -O2 -D ENABLE_TIMING=1 -xCORE-AVX512 src/matmul.c -o bin/matmul_seq 
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./bin/
+matmul_seq  seq_bench/  
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./bin/
+matmul_seq  seq_bench/  
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./bin/matmul_seq 
+
+Please verify that both the operating system and the processor support Intel(R) AVX512F, AVX512DQ, AVX512CD, AVX512BW and AVX512VL instructions.
+
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ make seq
+icx -O2 -g -D ENABLE_TIMING=1 -xHOST src/matmul.c -o bin/matmul_seq 
+S4965918@wk004:/home/Zsf/Desktop/_FINAL_PROJECT$ ./scripts/bench_seq.sh 
+
+══════════════════════════════════════════════════════════════════════
+║             Sequential Matrix Multiplication Benchmark             ║
+══════════════════════════════════════════════════════════════════════
+
+▶ Configuration
+──────────────────────────────────────────────────
+[INFO] Source file: src/matmul.c
+[INFO] Benchmark runs: 5 (+ 1 warmup)
+[INFO] Output directory: bin/seq_bench
+[INFO] Matrix size: 5000 x 5000
+[✓] Created output directories
+
+▶ System Information
+──────────────────────────────────────────────────
+[INFO] CPU: 12th Gen Intel(R) Core(TM) i9-12900K
+[INFO] Cores: 24
+[INFO] Cache: L1d=640 KiB (16 instances), L2=14 MiB (10 instances), L3=30 MiB (1 instance)
+[✓] Saved system info to bin/seq_bench/logs/system_info.txt
+
+▶ Checking Compilers
+──────────────────────────────────────────────────
+[✓] gcc: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+[✓] icc: icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+[✓] icx: Intel(R) oneAPI DPC++/C++ Compiler 2023.2.0 (2023.2.0.20230721)
+
+▶ Compilation and Benchmarking
+──────────────────────────────────────────────────
+
+━━━ Compiler: gcc ━━━
+[✓] Compiled matmul_O0 (15.97 KB, .073240207s)
+[INFO] Set as reference (checksum: b5778464...)l_O0...
+     → Mean: 209.727200s | GFLOP/s: 1.192 | StdDev: .4391237866s
+     → SIMD: SSE=13 AVX=0 AVX512=0 FMA=0
+     → Report not available
+     → Correctness: REFERENCE
+[✓] Compiled matmul_O2 (16.02 KB, .061022972s)
+[✓] Correctness check PASSED (checksum: b5778464...)..
+     → Mean: 51.364400s | GFLOP/s: 4.867 | StdDev: 1.9741075958s
+     → SIMD: SSE=11 AVX=0 AVX512=0 FMA=0
+     → Vectorized: 2, Missed: 26
+     → Correctness: PASS
+[✓] Compiled matmul_O3 (16.02 KB, .060854569s)
+[✓] Correctness check PASSED (checksum: b5778464...)..
+     → Mean: 37.716600s | GFLOP/s: 6.628 | StdDev: .1945836581s
+     → SIMD: SSE=23 AVX=0 AVX512=0 FMA=0
+     → Vectorized: 3, Missed: 28
+     → Correctness: PASS
+[✓] Compiled matmul_O3_native_unroll (16.02 KB, .099648871s)
+[✓] Correctness check PASSED (checksum: b5778464...)oll..._unroll...
+     → Mean: 35.795000s | GFLOP/s: 6.984 | StdDev: .2033814150s
+     → SIMD: SSE=89 AVX=81 AVX512=0 FMA=0
+     → Vectorized: 3, Missed: 28
+     → Correctness: PASS
+[✓] Compiled matmul_O3_native (16.02 KB, .059308290s)
+[✓] Correctness check PASSED (checksum: b5778464...)native...
+     → Mean: 36.486000s | GFLOP/s: 6.851 | StdDev: .2706039541s
+     → SIMD: SSE=14 AVX=13 AVX512=0 FMA=0
+     → Vectorized: 3, Missed: 28
+     → Correctness: PASS
+[✓] Compiled matmul_O3_native_fast (17.48 KB, .055966199s)
+[✓] Correctness check PASSED (checksum: b5778464...)t...ve_fast...
+     → Mean: 36.464600s | GFLOP/s: 6.855 | StdDev: .4232183833s
+     → SIMD: SSE=9 AVX=12 AVX512=0 FMA=4
+     → Vectorized: 3, Missed: 28
+     → Correctness: PASS
+
+━━━ Compiler: icc ━━━
+[✓] Compiled matmul_O0 (15.99 KB, .155335241s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)
+[...] Benchmarking matmul_O0...
+        for (j = 0; j < max; ++j) {     → Mean: 255.297400s | GFLOP/s: .979 | StdDev: .1353377257s
+     → SIMD: SSE=15 AVX=0 AVX512=0 FMA=0
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+[✓] Compiled matmul_O2 (30.21 KB, .097740053s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)
+     → Mean: 48.521000s | GFLOP/s: 5.152 | StdDev: .2162544797s
+     → SIMD: SSE=108 AVX=0 AVX512=0 FMA=0
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+[✓] Compiled matmul_O3 (30.21 KB, .164260238s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)
+     → Mean: 18.322400s | GFLOP/s: 13.644 | StdDev: .0381090540s
+     → SIMD: SSE=129 AVX=0 AVX512=0 FMA=0
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost_unroll (34.21 KB, .247583860s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)ll...
+     → Mean: 5.083800s | GFLOP/s: 49.175 | StdDev: .0228516957s
+     → SIMD: SSE=236 AVX=130 AVX512=0 FMA=63
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost (34.21 KB, .243783963s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)
+     → Mean: 5.066800s | GFLOP/s: 49.340 | StdDev: .0049193495s
+     → SIMD: SSE=236 AVX=130 AVX512=0 FMA=63
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost_fast (34.21 KB, .243125422s)
+icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+icc: remark #10397: optimization reports are generated in *.optrpt files in the output location
+[✓] Correctness check PASSED (checksum: b5778464...)...
+     → Mean: 5.059600s | GFLOP/s: 49.411 | StdDev: .0091815031s
+     → SIMD: SSE=236 AVX=130 AVX512=0 FMA=63
+     → Vectorized: 0
+0, Not vectorized: 0
+0
+     → Correctness: PASS
+
+━━━ Compiler: icx ━━━
+[✓] Compiled matmul_O0 (15.90 KB, .135561554s)
+[✓] Correctness check PASSED (checksum: b5778464...)..
+     → Mean: 167.195800s | GFLOP/s: 1.495 | StdDev: .1712460218s
+     → SIMD: SSE=14 AVX=0 AVX512=0 FMA=0
+     → Report not available
+     → Correctness: PASS
+[✓] Compiled matmul_O2 (16.00 KB, .071560419s)
+[✓] Correctness check PASSED (checksum: b5778464...)..
+     → Mean: 50.028800s | GFLOP/s: 4.997 | StdDev: .2049163243s
+     → SIMD: SSE=31 AVX=0 AVX512=0 FMA=0
+     → Report not available
+     → Correctness: PASS
+[✓] Compiled matmul_O3 (16.00 KB, .074353073s)
+[✓] Correctness check PASSED (checksum: b5778464...)..
+     → Mean: 50.770200s | GFLOP/s: 4.924 | StdDev: .0658763994s
+     → SIMD: SSE=31 AVX=0 AVX512=0 FMA=0
+     → Report not available
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost_unroll (34.67 KB, .170572990s)
+[✓] Correctness check PASSED (checksum: b5778464...)ll..._unroll...
+     → Mean: 4.859400s | GFLOP/s: 51.446 | StdDev: .0147749788s
+     → SIMD: SSE=127 AVX=76 AVX512=20 FMA=16
+     → Report not available
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost (34.67 KB, .179951363s)
+[✓] Correctness check PASSED (checksum: b5778464...)xHost...
+     → Mean: 4.852600s | GFLOP/s: 51.518 | StdDev: .0090443352s
+     → SIMD: SSE=127 AVX=76 AVX512=20 FMA=16
+     → Report not available
+     → Correctness: PASS
+[✓] Compiled matmul_O3_xHost_fast (34.67 KB, .173852640s)
+[✓] Correctness check PASSED (checksum: b5778464...)...st_fast...
+     → Mean: 5.155600s | GFLOP/s: 48.490 | StdDev: .6867305148s
+     → SIMD: SSE=127 AVX=76 AVX512=20 FMA=16
+     → Report not available
+     → Correctness: PASS
+
+══════════════════════════════════════════════════════════════════════
+║                         Benchmark Summary                          ║
+══════════════════════════════════════════════════════════════════════
+
+Performance Ranking (by execution time):
+
+  #1 icx/matmul_O3_xHost [✓]
+      Time: 4.852600s | GFLOP/s: 51.518 ⭐ BEST
+  #2 icx/matmul_O3_xHost_unroll [✓]
+      Time: 4.859400s | GFLOP/s: 51.446 | Slowdown: 1.00x
+  #3 icc/matmul_O3_xHost_fast [✓]
+      Time: 5.059600s | GFLOP/s: 49.411 | Slowdown: 1.04x
+  #4 icc/matmul_O3_xHost [✓]
+      Time: 5.066800s | GFLOP/s: 49.340 | Slowdown: 1.04x
+  #5 icc/matmul_O3_xHost_unroll [✓]
+      Time: 5.083800s | GFLOP/s: 49.175 | Slowdown: 1.04x
+  #6 icx/matmul_O3_xHost_fast [✓]
+      Time: 5.155600s | GFLOP/s: 48.490 | Slowdown: 1.06x
+  #7 icc/matmul_O3 [✓]
+      Time: 18.322400s | GFLOP/s: 13.644 | Slowdown: 3.77x
+  #8 gcc/matmul_O3_native_unroll [✓]
+      Time: 35.795000s | GFLOP/s: 6.984 | Slowdown: 7.37x
+  #9 gcc/matmul_O3_native_fast [✓]
+      Time: 36.464600s | GFLOP/s: 6.855 | Slowdown: 7.51x
+  #10 gcc/matmul_O3_native [✓]
+      Time: 36.486000s | GFLOP/s: 6.851 | Slowdown: 7.51x
+  #11 gcc/matmul_O3 [✓]
+      Time: 37.716600s | GFLOP/s: 6.628 | Slowdown: 7.77x
+  #12 icc/matmul_O2 [✓]
+      Time: 48.521000s | GFLOP/s: 5.152 | Slowdown: 9.99x
+  #13 icx/matmul_O2 [✓]
+      Time: 50.028800s | GFLOP/s: 4.997 | Slowdown: 10.30x
+  #14 icx/matmul_O3 [✓]
+      Time: 50.770200s | GFLOP/s: 4.924 | Slowdown: 10.46x
+  #15 gcc/matmul_O2 [✓]
+      Time: 51.364400s | GFLOP/s: 4.867 | Slowdown: 10.58x
+  #16 icx/matmul_O0 [✓]
+      Time: 167.195800s | GFLOP/s: 1.495 | Slowdown: 34.45x
+  #17 gcc/matmul_O0 [✓]
+      Time: 209.727200s | GFLOP/s: 1.192 | Slowdown: 43.21x
+  #18 icc/matmul_O0 [✓]
+      Time: 255.297400s | GFLOP/s: .979 | Slowdown: 52.61x
+
+Output Files:
+  • Base directory: bin/seq_bench/
+  • CSV summary:    bin/seq_bench/logs/summary.csv
+  • System info:    bin/seq_bench/logs/system_info.txt
+  • Per-compiler subdirectories:
+      └─ gcc/  (binaries, logs, vec_reports/, asm/)
+      └─ icc/  (binaries, logs, vec_reports/, asm/)
+      └─ icx/  (binaries, logs, vec_reports/, asm/)
+
+══════════════════════════════════════════════════════════════════════
+║                         Benchmark Complete                         ║
+══════════════════════════════════════════════════════════════════════
+
+[✓] All benchmarks completed successfully!

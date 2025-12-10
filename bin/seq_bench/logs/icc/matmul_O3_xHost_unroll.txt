@@ -1,0 +1,71 @@
+========================================
+BENCHMARK RESULTS: matmul_O3_xHost_unroll
+========================================
+
+Compiler: icc
+Compiler Version: icc: remark #10441: The Intel(R) C++ Compiler Classic (ICC) is deprecated and will be removed from product release in the second half of 2023. The Intel(R) oneAPI DPC++/C++ Compiler (ICX) is the recommended compiler moving forward. Please transition to use this compiler. Use '-diag-disable=10441' to disable this message.
+Flags: -O3 -xHost -funroll-loops
+Common Flags: -std=c11 -Wall -DENABLE_TIMING=1
+Full Command: icc -std=c11 -Wall -DENABLE_TIMING=1 -O3 -xHost -funroll-loops src/matmul.c -o bin/seq_bench/icc/matmul_O3_xHost_unroll -lm
+
+Binary Size: 34.21 KB
+Compile Time: .247583860 s
+
+Matrix Size: 5000 x 5000
+Benchmark Runs: 5 (+ 1 warmup)
+
+----------------------------------------
+EXECUTION TIMES
+----------------------------------------
+Run 1: 5.076 s
+Run 2: 5.067 s
+Run 3: 5.078 s
+Run 4: 5.074 s
+Run 5: 5.124 s
+
+----------------------------------------
+STATISTICS
+----------------------------------------
+Mean Time:   5.083800 s
+Min Time:    5.067 s
+Max Time:    5.124 s
+Std Dev:     .0228516957 s
+GFLOP/s:     49.175
+
+----------------------------------------
+ADDITIONAL INFO
+----------------------------------------
+
+Binary file info:
+bin/seq_bench/icc/matmul_O3_xHost_unroll: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=9e30f9b0fdff705c33c033a57d477337f0c6611f, for GNU/Linux 3.2.0, not stripped
+
+Binary sections (size):
+   text	   data	    bss	    dec	    hex	filename
+  21447	   1784	   2816	  26047	   65bf	bin/seq_bench/icc/matmul_O3_xHost_unroll
+
+----------------------------------------
+VECTORIZATION ANALYSIS
+----------------------------------------
+Vectorization Summary: Vectorized: 0
+0, Not vectorized: 0
+0
+Full report: bin/seq_bench/logs/icc/vec_reports/matmul_O3_xHost_unroll_vec.txt
+
+----------------------------------------
+ASSEMBLY ANALYSIS
+----------------------------------------
+SIMD Instruction Counts:
+  SSE instructions:    236
+  AVX instructions:    130
+  AVX-512 instructions: 0
+  FMA instructions:    63
+  Scalar FP ops:       1
+
+Full disassembly: bin/seq_bench/logs/icc/asm/matmul_O3_xHost_unroll.asm
+
+----------------------------------------
+CORRECTNESS CHECK
+----------------------------------------
+Status: PASS
+Checksum: b5778464ceb7ad651cf1d6118fd279af
+Reference Checksum: b5778464ceb7ad651cf1d6118fd279af

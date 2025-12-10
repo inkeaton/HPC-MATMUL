@@ -294,7 +294,8 @@ get_compiler_version() {
             $compiler --version | head -n1
             ;;
         icc|icx)
-            $compiler --version 2>&1 | head -n1
+            # Fix: Allow SIGPIPE failure by appending '|| true'
+            $compiler --version 2>&1 | head -n1 || true
             ;;
         *)
             echo "Unknown"

@@ -1,0 +1,69 @@
+========================================
+BENCHMARK RESULTS: matmul_O3_xHost_unroll
+========================================
+
+Compiler: icx
+Compiler Version: Intel(R) oneAPI DPC++/C++ Compiler 2023.2.0 (2023.2.0.20230721)
+Flags: -O3 -xHost -funroll-loops
+Common Flags: -std=c11 -Wall -DENABLE_TIMING=1
+Full Command: icx -std=c11 -Wall -DENABLE_TIMING=1 -O3 -xHost -funroll-loops src/matmul.c -o bin/seq_bench/icx/matmul_O3_xHost_unroll -lm
+
+Binary Size: 34.67 KB
+Compile Time: .170572990 s
+
+Matrix Size: 5000 x 5000
+Benchmark Runs: 5 (+ 1 warmup)
+
+----------------------------------------
+EXECUTION TIMES
+----------------------------------------
+Run 1: 4.849 s
+Run 2: 4.850 s
+Run 3: 4.885 s
+Run 4: 4.855 s
+Run 5: 4.858 s
+
+----------------------------------------
+STATISTICS
+----------------------------------------
+Mean Time:   4.859400 s
+Min Time:    4.849 s
+Max Time:    4.885 s
+Std Dev:     .0147749788 s
+GFLOP/s:     51.446
+
+----------------------------------------
+ADDITIONAL INFO
+----------------------------------------
+
+Binary file info:
+bin/seq_bench/icx/matmul_O3_xHost_unroll: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, not stripped
+
+Binary sections (size):
+   text	   data	    bss	    dec	    hex	filename
+  19982	   1768	   2832	  24582	   6006	bin/seq_bench/icx/matmul_O3_xHost_unroll
+
+----------------------------------------
+VECTORIZATION ANALYSIS
+----------------------------------------
+Vectorization Summary: Report not available
+Full report: bin/seq_bench/logs/icx/vec_reports/matmul_O3_xHost_unroll_vec.txt
+
+----------------------------------------
+ASSEMBLY ANALYSIS
+----------------------------------------
+SIMD Instruction Counts:
+  SSE instructions:    127
+  AVX instructions:    76
+  AVX-512 instructions: 20
+  FMA instructions:    16
+  Scalar FP ops:       1
+
+Full disassembly: bin/seq_bench/logs/icx/asm/matmul_O3_xHost_unroll.asm
+
+----------------------------------------
+CORRECTNESS CHECK
+----------------------------------------
+Status: PASS
+Checksum: b5778464ceb7ad651cf1d6118fd279af
+Reference Checksum: b5778464ceb7ad651cf1d6118fd279af

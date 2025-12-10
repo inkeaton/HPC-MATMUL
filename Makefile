@@ -4,9 +4,9 @@ TIMING ?= 1
 TIMING_FLAG = -D ENABLE_TIMING=$(TIMING)
 
 # compilers and flags
-CC      := icx
-MPICC   ?= mpicc
-CFLAGS  ?= -O2 -g $(TIMING_FLAG) -xCORE-AVX2
+CC      := icx # options: gcc, icc, icx
+MPICC   ?= mpiicc # or mpicc for gcc
+CFLAGS  ?= -O2 -g $(TIMING_FLAG) -xHOST
 LDFLAGS ?=
 
 # source folder and binary output folder
