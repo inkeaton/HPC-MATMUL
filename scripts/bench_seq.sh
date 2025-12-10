@@ -82,7 +82,7 @@ COMMON_FLAGS="-std=c11 -Wall -DENABLE_TIMING=1"
 # Note: ICX generates remarks to stderr, ICC generates .optrpt files
 declare -A VEC_REPORT_FLAGS=(
     ["gcc"]="-fopt-info-vec-optimized -fopt-info-vec-missed"
-    ["icc"]="-qopt-report=5 -qopt-report-phase=vec"
+    ["icc"]="-qopt-report=5 -qopt-report-phase=vec -diag-disable=10441"
     ["icx"]="-Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize"
 )
 
@@ -163,7 +163,8 @@ log_error() {
 
 # Log progress with spinner
 log_progress() {
-    echo -ne "${CYAN}[...]${NC} $1\r"
+    # Print a single, clean progress line (no carriage return artifacts)
+    echo -e "${CYAN}[...]${NC} $1"
 }
 
 # Calculate mean of values
@@ -405,20 +406,26 @@ summarize_vec_report() {
     case $compiler in
         gcc)
             # GCC uses "optimized:" for success and "missed:" for failures
-            local vectorized=$(grep -cE "(optimized|VECTORIZED)" "$report_file" 2>/dev/null || echo 0)
-            local not_vectorized=$(grep -cE "(missed|not vectorized)" "$report_file" 2>/dev/null || echo 0)
+            local vectorized=$(grep -cE "(optimized|VECTORIZED)" "$report_file" 2>/dev/null)
+            vectorized=${vectorized:-0}
+            local not_vectorized=$(grep -cE "(missed|not vectorized)" "$report_file" 2>/dev/null)
+            not_vectorized=${not_vectorized:-0}
             echo "Vectorized: ${vectorized}, Missed: ${not_vectorized}"
             ;;
         icc)
             # ICC optimization report format
-            local vectorized=$(grep -cE "(LOOP WAS VECTORIZED|VECTORIZED)" "$report_file" 2>/dev/null || echo 0)
-            local not_vectorized=$(grep -cE "(was not vectorized|NOT VECTORIZED)" "$report_file" 2>/dev/null || echo 0)
+            local vectorized=$(grep -cE "(LOOP WAS VECTORIZED|VECTORIZED)" "$report_file" 2>/dev/null)
+            vectorized=${vectorized:-0}
+            local not_vectorized=$(grep -cE "(was not vectorized|NOT VECTORIZED)" "$report_file" 2>/dev/null)
+            not_vectorized=${not_vectorized:-0}
             echo "Vectorized: ${vectorized}, Not vectorized: ${not_vectorized}"
             ;;
         icx)
             # ICX uses clang-style -Rpass remarks
-            local vectorized=$(grep -cE "remark:.*vectorized" "$report_file" 2>/dev/null || echo 0)
-            local not_vectorized=$(grep -cE "remark:.*(not vectorized|failed)" "$report_file" 2>/dev/null || echo 0)
+            local vectorized=$(grep -cE "remark:.*vectorized" "$report_file" 2>/dev/null)
+            vectorized=${vectorized:-0}
+            local not_vectorized=$(grep -cE "remark:.*(not vectorized|failed)" "$report_file" 2>/dev/null)
+            not_vectorized=${not_vectorized:-0}
             echo "Vectorized: ${vectorized}, Missed: ${not_vectorized}"
             ;;
         *)

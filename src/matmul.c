@@ -25,9 +25,9 @@ int main(int argc, char **argv) {
       }
 
    /* Timing the start */
-   clock_t time;
+   struct timespec start, end;
    if (ENABLE_TIMING==1) {
-      time = clock();
+      clock_gettime(CLOCK_MONOTONIC, &start);
    }
 
    /* Naive matrix multiplication: C = A * B. */
@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
 
    /* Timing the end and reporting */
    if (ENABLE_TIMING==1) {
-      time = clock() - time;
-      double time_taken = ((double)time)/CLOCKS_PER_SEC;
+      clock_gettime(CLOCK_MONOTONIC, &end);
+      double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
       fprintf(stderr, "[seq] n=%d elapsed=%.3f s\n", n, time_taken);
    }
 
