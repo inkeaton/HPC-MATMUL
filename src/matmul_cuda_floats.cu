@@ -1,6 +1,5 @@
 /* * COMPILE OPTIONS:
- * * NVCC:
- * nvcc -O3 -arch=sm_70 -std=c++17 matmul_cuda.cu -o matmul_cuda
+ * nvcc -O3 -arch=sm_70 -std=c++17 matmul_cuda_floats.cu -o matmul_cuda_floats
  */
 
 #define n 5000
@@ -23,11 +22,11 @@ static void cuda_check(cudaError_t err, const char *msg)
 /* * Tiled Matrix Multiplication Kernel
  * Uses Shared Memory to reduce Global Memory access.
  */
-__global__ void matmul_tiled_kernel(const double *a, const double *b, double *c, int width)
+__global__ void matmul_tiled_kernel(const float *a, const float *b, float *c, int width)
 {
     // Shared memory for the sub-blocks (tiles) of A and B
-    __shared__ double As[TILE_WIDTH][TILE_WIDTH];
-    __shared__ double Bs[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float As[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float Bs[TILE_WIDTH][TILE_WIDTH];
 
     // Row and Column index for the result element
     int bx = blockIdx.x;
@@ -39,7 +38,7 @@ __global__ void matmul_tiled_kernel(const double *a, const double *b, double *c,
     int row = by * TILE_WIDTH + ty;
     int col = bx * TILE_WIDTH + tx;
 
-    double val = 0.0f;
+    float val = 0.0f;
 
     // Loop over the matrix tiles
     // 'm' is the index of the tile (0, 1, 2... width/TILE_WIDTH)
@@ -80,12 +79,13 @@ __global__ void matmul_tiled_kernel(const double *a, const double *b, double *c,
 
 int main(int argc, char **argv)
 {
-    size_t bytes = sizeof(double) * n * n;
+    // CHANGED: Using float instead of double
+    size_t bytes = sizeof(float) * n * n;
 
     /* Allocate and initialize host matrices. */
-    double *h_a = (double *)malloc(bytes);
-    double *h_b = (double *)malloc(bytes);
-    double *h_c = (double *)malloc(bytes);
+    float *h_a = (float *)malloc(bytes);
+    float *h_b = (float *)malloc(bytes);
+    float *h_c = (float *)malloc(bytes);
 
     // Initialize
     for (int i = 0; i < n; ++i)
@@ -97,9 +97,9 @@ int main(int argc, char **argv)
         }
 
     /* Allocate device buffers */
-    double *d_a = nullptr;
-    double *d_b = nullptr;
-    double *d_c = nullptr;
+    float *d_a = nullptr;
+    float *d_b = nullptr;
+    float *d_c = nullptr;
     cuda_check(cudaMalloc((void **)&d_a, bytes), "cudaMalloc a");
     cuda_check(cudaMalloc((void **)&d_b, bytes), "cudaMalloc b");
     cuda_check(cudaMalloc((void **)&d_c, bytes), "cudaMalloc c");
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 
     printf("Grid size: %d x %d\n", grid.x, grid.y);
     printf("Block size: %d x %d\n", block.x, block.y);
-
+    
     #ifdef ENABLE_TIMING
         cudaEvent_t start, stop;
         cuda_check(cudaEventCreate(&start), "event create start");
