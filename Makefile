@@ -2,7 +2,7 @@
 # Compilers and base flags
 CC            = gcc        # options: gcc, icc, icx
 MPICC         = mpiicc     # or mpicc for gcc
-BASE_CFLAGS   = -O2 -march=native
+BASE_CFLAGS   = -O3 -march=native # -ffast-math
 OMP_FLAG      = -fopenmp
 LDFLAGS       =
 

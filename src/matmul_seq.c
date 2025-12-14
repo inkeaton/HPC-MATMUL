@@ -27,6 +27,7 @@ int main(int argc, char **argv)
 	 # OPTIMIZATION 1: Memory Alignment
 	 * Align memory to 64 bytes (cache line size) for optimal vectorization.
 	 * We use pointer-to-array syntax to keep a[i][j] notation valid.
+	 * We use 'restrict' to inform the compiler that these pointers do not overlap.
 	 */
 	double (*restrict a)[n] = aligned_alloc(64, sizeof(double[n][n]));
 	double (*restrict b)[n] = aligned_alloc(64, sizeof(double[n][n]));
@@ -64,6 +65,10 @@ int main(int argc, char **argv)
 	 # OPTIMIZATION 2: Cache Blocking (Tiling)
 	 * Instead of iterating 0..N, we iterate block by block.
 	 * This keeps active data inside the L1/L2 cache.
+	 * 
+	 * __assume_aligned could be used here to inform the compiler
+	 * about the alignment of the pointers, but since we used aligned_alloc,
+	 * the compiler should already be aware of this.
 	 */
 	for (int ii = 0; ii < n; ii += BLOCK_SIZE)
 	{

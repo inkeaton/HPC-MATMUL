@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 
     /* 1. Memory Alignment
     /  Using aligned_alloc ensures 64-byte alignment for AVX2 instructions.
+    /  We use 'restrict' to inform the compiler that these pointers do not overlap.
     */
     double (*restrict a)[n] = aligned_alloc(64, sizeof(double[n][n]));
     double (*restrict b)[n] = aligned_alloc(64, sizeof(double[n][n]));
@@ -46,6 +47,10 @@ int main(int argc, char **argv)
 
     /* Initialize A and B.*/
     // Should we parallelize this too?
+    // We could run this loop in parallel NOT just for speed,
+    // but to ensure threads on different cores "touch" their own (first touch policy)
+    // slice of the matrix first, locking that memory to their local NUMA node.
+    // but our system is not NUMA, so it should not matter much.
     // #pragma omp parallel for schedule(static)
     for (int i = 0; i < n; i++)
     {
