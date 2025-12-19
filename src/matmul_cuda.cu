@@ -3,6 +3,8 @@
  * nvcc -O3 -arch=sm_70 -std=c++17 matmul_cuda.cu -o matmul_cuda
  */
 
+ // TBD: test caching/non caching mode
+
 #define n 5000
 #define TILE_WIDTH 32 // Block size (32x32 threads)
 
