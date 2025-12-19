@@ -1,0 +1,128 @@
+lspci -v
+0000:00:00.0 Host bridge: Intel Corporation 12th Gen Core Processor Host Bridge/DRAM Registers (rev 02)
+	Subsystem: Hewlett-Packard Company 12th Gen Core Processor Host Bridge/DRAM Registers
+	Flags: bus master, fast devsel, latency 0, IOMMU group 0
+
+0000:00:02.0 VGA compatible controller: Intel Corporation AlderLake-S GT1 (rev 0c) (prog-if 00 [VGA controller])
+	DeviceName: Onboard IGD
+	Subsystem: Hewlett-Packard Company AlderLake-S GT1
+	Flags: bus master, fast devsel, latency 0, IRQ 153, IOMMU group 1
+	Memory at 6002000000 (64-bit, non-prefetchable) [size=16M]
+	Memory at 4000000000 (64-bit, prefetchable) [size=256M]
+	I/O ports at 3000 [size=64]
+	Expansion ROM at 000c0000 [virtual] [disabled] [size=128K]
+	Capabilities: <access denied>
+	Kernel driver in use: i915
+	Kernel modules: i915
+
+0000:00:04.0 Signal processing controller: Intel Corporation Alder Lake Innovation Platform Framework Processor Participant (rev 02)
+	Subsystem: Hewlett-Packard Company Alder Lake Innovation Platform Framework Processor Participant
+	Flags: bus master, fast devsel, latency 0, IRQ 154, IOMMU group 2
+	Memory at 6003200000 (64-bit, non-prefetchable) [size=128K]
+	Capabilities: <access denied>
+	Kernel driver in use: proc_thermal_pci
+	Kernel modules: processor_thermal_device_pci
+
+0000:00:06.0 System peripheral: Intel Corporation RST VMD Managed Controller
+	Flags: fast devsel, IOMMU group 3
+
+0000:00:0e.0 RAID bus controller: Intel Corporation Volume Management Device NVMe RAID Controller
+	Subsystem: Hewlett-Packard Company Volume Management Device NVMe RAID Controller
+	Flags: bus master, fast devsel, latency 0, IOMMU group 4
+	Memory at 6000000000 (64-bit, non-prefetchable) [size=32M]
+	Memory at 82000000 (32-bit, non-prefetchable) [size=32M]
+	Memory at 6003100000 (64-bit, non-prefetchable) [size=1M]
+	Capabilities: <access denied>
+	Kernel driver in use: vmd
+	Kernel modules: vmd
+
+0000:00:14.0 USB controller: Intel Corporation Alder Lake-S PCH USB 3.2 Gen 2x2 XHCI Controller (rev 11) (prog-if 30 [XHCI])
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH USB 3.2 Gen 2x2 XHCI Controller
+	Physical Slot: 5
+	Flags: bus master, medium devsel, latency 0, IRQ 142, IOMMU group 5
+	Memory at 6003220000 (64-bit, non-prefetchable) [size=64K]
+	Capabilities: <access denied>
+	Kernel driver in use: xhci_hcd
+	Kernel modules: xhci_pci
+
+0000:00:14.2 RAM memory: Intel Corporation Alder Lake-S PCH Shared SRAM (rev 11)
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH Shared SRAM
+	Physical Slot: 5
+	Flags: fast devsel, IOMMU group 5
+	Memory at 6003234000 (64-bit, non-prefetchable) [disabled] [size=16K]
+	Memory at 600323a000 (64-bit, non-prefetchable) [disabled] [size=4K]
+	Capabilities: <access denied>
+
+0000:00:16.0 Communication controller: Intel Corporation Alder Lake-S PCH HECI Controller #1 (rev 11)
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH HECI Controller
+	Flags: bus master, fast devsel, latency 0, IRQ 143, IOMMU group 6
+	Memory at 6003239000 (64-bit, non-prefetchable) [size=4K]
+	Capabilities: <access denied>
+	Kernel driver in use: mei_me
+	Kernel modules: mei_me
+
+0000:00:17.0 System peripheral: Intel Corporation RST VMD Managed Controller
+	Flags: fast devsel, IOMMU group 7
+
+0000:00:1f.0 ISA bridge: Intel Corporation Device 7a88 (rev 11)
+	Subsystem: Hewlett-Packard Company Device 895c
+	Flags: bus master, fast devsel, latency 0, IOMMU group 8
+
+0000:00:1f.3 Audio device: Intel Corporation Alder Lake-S HD Audio Controller (rev 11)
+	Subsystem: Hewlett-Packard Company Alder Lake-S HD Audio Controller
+	Flags: bus master, fast devsel, latency 64, IRQ 157, IOMMU group 8
+	Memory at 6003230000 (64-bit, non-prefetchable) [size=16K]
+	Memory at 6003000000 (64-bit, non-prefetchable) [size=1M]
+	Capabilities: <access denied>
+	Kernel driver in use: snd_hda_intel
+	Kernel modules: snd_hda_intel, snd_sof_pci_intel_tgl
+
+0000:00:1f.4 SMBus: Intel Corporation Alder Lake-S PCH SMBus Controller (rev 11)
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH SMBus Controller
+	Flags: medium devsel, IRQ 18, IOMMU group 8
+	Memory at 6003238000 (64-bit, non-prefetchable) [size=256]
+	I/O ports at efa0 [size=32]
+	Kernel driver in use: i801_smbus
+	Kernel modules: i2c_i801
+
+0000:00:1f.5 Serial bus controller: Intel Corporation Alder Lake-S PCH SPI Controller (rev 11)
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH SPI Controller
+	Flags: fast devsel, IOMMU group 8
+	Memory at 80800000 (32-bit, non-prefetchable) [size=4K]
+
+0000:00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection (17) I219-LM (rev 11)
+	DeviceName: Onboard Lan
+	Subsystem: Hewlett-Packard Company Ethernet Connection (17) I219-LM
+	Flags: bus master, fast devsel, latency 0, IRQ 156, IOMMU group 8
+	Memory at 84000000 (32-bit, non-prefetchable) [size=128K]
+	Capabilities: <access denied>
+	Kernel driver in use: e1000e
+	Kernel modules: e1000e
+
+10000:e0:06.0 PCI bridge: Intel Corporation 12th Gen Core Processor PCI Express x4 Controller #0 (rev 02) (prog-if 00 [Normal decode])
+	Subsystem: Hewlett-Packard Company 12th Gen Core Processor PCI Express x4 Controller
+	Flags: bus master, fast devsel, latency 0, IRQ 141, IOMMU group 4
+	Bus: primary=00, secondary=e1, subordinate=e1, sec-latency=0
+	I/O behind bridge: [disabled] [16-bit]
+	Memory behind bridge: 82000000-820fffff [size=1M] [32-bit]
+	Prefetchable memory behind bridge: [disabled] [64-bit]
+	Capabilities: <access denied>
+	Kernel driver in use: pcieport
+
+10000:e0:17.0 SATA controller: Intel Corporation Alder Lake-S PCH SATA Controller [AHCI Mode] (rev 11) (prog-if 01 [AHCI 1.0])
+	Subsystem: Hewlett-Packard Company Alder Lake-S PCH SATA Controller [AHCI Mode]
+	Flags: bus master, 66MHz, medium devsel, latency 0, IRQ 152, IOMMU group 4
+	Memory at 82100000 (32-bit, non-prefetchable) [size=8K]
+	Memory at 82102800 (32-bit, non-prefetchable) [size=256]
+	Memory at 82102000 (32-bit, non-prefetchable) [size=2K]
+	Capabilities: <access denied>
+	Kernel driver in use: ahci
+	Kernel modules: ahci
+
+10000:e1:00.0 Non-Volatile memory controller: Micron Technology Inc 2450 NVMe SSD [HendrixV] (DRAM-less) (rev 01) (prog-if 02 [NVM Express])
+	Subsystem: Micron Technology Inc 2450 NVMe SSD [HendrixV] (DRAM-less)
+	Flags: bus master, fast devsel, latency 0, NUMA node 0, IOMMU group 4
+	Memory at 82000000 (64-bit, non-prefetchable) [size=16K]
+	Capabilities: <access denied>
+	Kernel driver in use: nvme
+	Kernel modules: nvme
