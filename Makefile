@@ -1,7 +1,7 @@
-
 # Compilers and base flags
+# for intel stuff: source /opt/intel/oneapi/setvars.sh
 CC            = gcc        # options: gcc, icc, icx
-MPICC         = mpiicc     # or mpicc for gcc
+MPICC         = mpicc     # or mpicc for gcc
 BASE_CFLAGS   = -O3 -march=native # -ffast-math
 OMP_FLAG      = -fopenmp
 LDFLAGS       =
