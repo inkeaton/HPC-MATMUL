@@ -1,0 +1,46 @@
+Warning: Sanitizing vector length to a multiple of the loop stride 32 and thread count 12 from 125000000 elements (1000000000 bytes) to 124999680 elements (999997440 bytes)
+Allocate: Process running on hwthread 0 (Domain S0) - Vector length 124999680/999997440 Offset 0 Alignment 512
+Initialization: Each thread in domain initializes its own stream chunks
+--------------------------------------------------------------------------------
+LIKWID MICRO BENCHMARK
+Test: load_avx512
+--------------------------------------------------------------------------------
+Using 1 work groups
+Using 12 threads
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+Group: 0 Thread 0 Global Thread 0 running on hwthread 0 - Vector length 10416640 Offset 0
+Group: 0 Thread 1 Global Thread 1 running on hwthread 12 - Vector length 10416640 Offset 10416640
+Group: 0 Thread 2 Global Thread 2 running on hwthread 1 - Vector length 10416640 Offset 20833280
+Group: 0 Thread 3 Global Thread 3 running on hwthread 13 - Vector length 10416640 Offset 31249920
+Group: 0 Thread 4 Global Thread 4 running on hwthread 2 - Vector length 10416640 Offset 41666560
+Group: 0 Thread 5 Global Thread 5 running on hwthread 14 - Vector length 10416640 Offset 52083200
+Group: 0 Thread 6 Global Thread 6 running on hwthread 3 - Vector length 10416640 Offset 62499840
+Group: 0 Thread 10 Global Thread 10 running on hwthread 5 - Vector length 10416640 Offset 104166400
+Group: 0 Thread 8 Global Thread 8 running on hwthread 4 - Vector length 10416640 Offset 83333120
+Group: 0 Thread 7 Global Thread 7 running on hwthread 15 - Vector length 10416640 Offset 72916480
+Group: 0 Thread 11 Global Thread 11 running on hwthread 17 - Vector length 10416640 Offset 114583040
+Group: 0 Thread 9 Global Thread 9 running on hwthread 16 - Vector length 10416640 Offset 93749760
+--------------------------------------------------------------------------------
+Cycles:			82020321246
+CPU Clock:		4700055265
+Cycle Clock:		4700055265
+Time:			1.745093e+01 sec
+Iterations:		12288
+Iterations per thread:	1024
+Inner loop executions:	325520
+Size (Byte):		999997440
+Size per thread:	83333120
+Number of Flops:	0
+MFlops/s:		0.00
+Data volume (Byte):	1023997378560
+MByte/s:		58678.68
+Cycles per update:	0.640785
+Cycles per cacheline:	5.126283
+Loads per update:	1
+Stores per update:	0
+Load bytes per element:	8
+Store bytes per elem.:	0
+Instructions:		27999928336
+UOPs:			23999938560
+--------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ Vendor ID:                   GenuineIntel
     Core(s) per socket:      1
     Socket(s):               1
     Stepping:                3
-    BogoMIPS:                4000.28
+    BogoMIPS:                4000.38
     Flags:                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pg
                              e mca cmov pat pse36 clflush mmx fxsr sse sse2 ss h
                              t syscall nx pdpe1gb rdtscp lm constant_tsc rep_goo
