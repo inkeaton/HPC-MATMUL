@@ -1,10 +1,5 @@
 #define n 5000
 
-// guard
-#ifndef ENABLE_TIMING
-#define ENABLE_TIMING 1
-#endif
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +22,11 @@ int main(int argc, char **argv)
         }
 
     /* Timing the start */
-    struct timespec start, end;
-    if (ENABLE_TIMING == 1)
-    {
-        clock_gettime(CLOCK_MONOTONIC, &start);
-    }
+    #ifdef ENABLE_TIMING
+        struct timespec start, end;
+		clock_gettime(CLOCK_MONOTONIC, &start);
+	#endif
+
 
     /* Naive matrix multiplication: C = A * B. */
     for (int i = 0; i < n; ++i)
@@ -40,12 +35,11 @@ int main(int argc, char **argv)
                 c[i][j] += a[i][k] * b[k][j];
 
     /* Timing the end and reporting */
-    if (ENABLE_TIMING == 1)
-    {
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-        fprintf(stderr, "[seq] n=%d elapsed=%.3f s\n", n, time_taken);
-    }
+    #ifdef ENABLE_TIMING
+		clock_gettime(CLOCK_MONOTONIC, &end);
+		double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+		fprintf(stderr, "[optimized-seq] n=%d elapsed=%.3f s\n", n, time_taken);
+    #endif
 
     /* Dump a 1000x1000 top-left block to file for inspection. */
     FILE *f = fopen("mat-res.txt", "w");

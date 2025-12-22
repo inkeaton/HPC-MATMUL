@@ -1,61 +1,84 @@
-/*  
-/   # COMPILE OPTIONS:
-/   ## Use the following for OMP Places and Bindings (especially for Hybrid CPUs):
-/       export OMP_PLACES=threads
-/       export OMP_PROC_BIND=spread
-/   ## Or use only performance cores:
-/       export OMP_PLACES="{0}:16" // with the previous
-/   ## GCC:
-/       gcc -O3 -march=native -fopenmp -ffast-math -funroll-loops -std=c11 matmul_omp.c -o matmul_omp
-/   ## ICX (Intel oneAPI):
-/       icx -O3 -xHost -qopenmp -fp-model fast -std=c11 matmul_omp.c -o matmul_omp
-/   ## RUNNING (Important for Hybrid CPU):
-/       OMP_NUM_THREADS=24 ./matmul_omp
-*/
+/* * ======================================================================================
+ * OPTIMIZED PARALLEL MATRIX MULTIPLICATION (OPENMP)
+ * ======================================================================================
+ * * COMPILATION INSTRUCTIONS:
+ * -------------------------
+ * * MACHINE 1: INTEL i9-12900K ("Machine 210") - Hybrid Architecture
+ * Compiler: Intel oneAPI (icx) is recommended for best hybrid scheduling.
+ * Command: 
+ * icx -O3 -xHost -qopenmp -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
+ * Alternative (GCC):
+ * gcc -O3 -march=native -fopenmp -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
+ *
+ * * MACHINE 2: AMD RYZEN 9 7900X ("Machine AMD") - Zen 4 Architecture
+ * Compiler: GCC is highly effective here.
+ * Command:
+ * gcc -O3 -march=native -fopenmp -mprefer-vector-width=512 -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
+ *
+ * * EXECUTION & TUNING (ENVIRONMENT VARIABLES):
+ * ---------------------------------------------
+ * * MACHINE 1 (Intel Hybrid):
+ * We need to balance load across fast P-cores and slow E-cores.
+ * Use 'spread' to use all cores, but 'guided' schedule (in code) handles the speed difference.
+ * export OMP_NUM_THREADS=24   (Use all logical threads)
+ * export OMP_PLACES=cores
+ * export OMP_PROC_BIND=spread
+ * ./matmul_omp
+ *
+ * * MACHINE 2 (AMD Chiplet):
+ * We want to spread threads across both CCX dies to maximize memory bandwidth.
+ * export OMP_NUM_THREADS=24
+ * export OMP_PLACES=threads
+ * export OMP_PROC_BIND=spread
+ * ./matmul_omp
+ * ---------------------------------------------
+ * * TESTING TO DO:
+ * - Compare performance with different number of threads (e.g., 8,16,24).
+ * - Compare performance with different scheduling strategies (static, dynamic, guided).
+ * - Compare performance with different scheduling chunk sizes (e.g., 1, 8, 32).
+ * - Compare performance without first-touch initialization.
+ * * ======================================================================================
+ */
 
-#define n 5000
-#define BLOCK_SIZE 64 // Fits well in L1/L2 cache
+#define N 5000
+// BLOCK_SIZE 64 fits well in L1/L2 caches and aligns with 64-byte cache lines.
+#define BLOCK_SIZE 64 
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <omp.h> // Required for OpenMP
+#include <omp.h> // Required for OpenMP functions
 
-// Helper min function
-static inline int min(int a, int b)
-{
-    return (a < b) ? a : b;
-}
+inline int min(int a, int b) { return (a < b) ? a : b; }
 
 int main(int argc, char **argv)
 {
+    /* * 1. ALIGNED ALLOCATION & RESTRICT
+     * - aligned_alloc(64, ...): Aligns to 64 bytes. Mandatory for AVX-512 (AMD) 
+     * and optimal for Cache Lines (Intel).
+     * - restrict: Promises no pointer aliasing, allowing aggressive SIMD generation.
+     */
+    double (* restrict a)[N] = aligned_alloc(64, sizeof(double[N][N]));
+    double (* restrict b)[N] = aligned_alloc(64, sizeof(double[N][N]));
+    double (* restrict c)[N] = aligned_alloc(64, sizeof(double[N][N]));
 
-    /* 1. Memory Alignment
-    /  Using aligned_alloc ensures 64-byte alignment for AVX2 instructions.
-    /  We use 'restrict' to inform the compiler that these pointers do not overlap.
-    */
-    double (*restrict a)[n] = aligned_alloc(64, sizeof(double[n][n]));
-    double (*restrict b)[n] = aligned_alloc(64, sizeof(double[n][n]));
-    double (*restrict c)[n] = aligned_alloc(64, sizeof(double[n][n]));
-
-    if (!a || !b || !c)
-    {
-        perror("Memory allocation failed");
+    if (!a || !b || !c) {
+        perror("Allocation failed");
         return 1;
     }
 
-    /* Initialize A and B.*/
-    // Should we parallelize this too?
-    // We could run this loop in parallel NOT just for speed,
-    // but to ensure threads on different cores "touch" their own (first touch policy)
-    // slice of the matrix first, locking that memory to their local NUMA node.
-    // but our system is not NUMA, so it should not matter much.
-    // #pragma omp parallel for schedule(static)
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
+    /* * 2. FIRST-TOUCH INITIALIZATION (NUMA AWARENESS)
+     * We parallelize the initialization loops.
+     * In Linux, memory is physically allocated only when first written to.
+     * By having the same threads write to the data now as will compute on it later,
+     * we ensure the data sits in the RAM bank closest to the core using it.
+     * This should not be a problem on 210 machine as all cores share the same memory controller.
+     * However, on AMD machine with multiple dies, this is crucial for performance.
+     */
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
             a[i][j] = 2.0;
             b[i][j] = 3.0;
             c[i][j] = 0.0;
@@ -67,48 +90,56 @@ int main(int argc, char **argv)
         start_time = omp_get_wtime();
     #endif
 
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // HOTSPOT BEGIN
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /* * 3. PARALLEL BLOCKED MATRIX MULTIPLICATION
+     * Strategy:
+     * - Loop Permutation: We use ii-jj-kk order.
+     * The outer loops (ii, jj) select a Block C[ii][jj].
+     * Since every block C[ii][jj] is distinct, different threads can compute 
+     * different blocks simultaneously without race conditions (no locks needed).
+     */
 
-    /* 2. OpenMP Parallel Tiled Multiplication
-    /  collapse(2): Merges loops 'ii' and 'jj' into one large loop of tasks.
-    /  schedule(dynamic): ESSENTIAL for Hybrid P-core/E-core CPUs.
-    /  It allows fast cores to grab more blocks than slow cores.
-    */
-    #pragma omp parallel for collapse(2) schedule(dynamic)
-    for (int ii = 0; ii < n; ii += BLOCK_SIZE)
-    {
-        for (int jj = 0; jj < n; jj += BLOCK_SIZE)
-        {
+    /* * 4. OPENMP DIRECTIVES EXPLAINED
+     * - collapse(2): Merges 'ii' and 'jj' into one single loop of ~6000 tasks.
+     * This creates a large pool of work, allowing better load balancing.
+     * * - schedule(guided, 8):
+     * Starts with large chunks (low overhead) and shrinks to size 8.
+     * - Intel: Prevents fast P-cores from waiting on slow E-cores (better than static).
+     * - General: Reduces scheduler locking overhead (better than dynamic, 1).
+     * - Minimum size 8: Ensures we don't process partial cache lines (avoids false sharing).
+     */
+    #pragma omp parallel for collapse(2) schedule(guided, 8)
+    for (int ii = 0; ii < N; ii += BLOCK_SIZE) {
+        for (int jj = 0; jj < N; jj += BLOCK_SIZE) {
+            
+            // The 'kk' loop iterates over input data. It is run serially by the thread
+            // that owns the current C[ii][jj] block.
+            for (int kk = 0; kk < N; kk += BLOCK_SIZE) {
+                
+                // Boundary checks for edge blocks
+                int i_max = min(ii + BLOCK_SIZE, N);
+                int k_max = min(kk + BLOCK_SIZE, N);
+                int j_max = min(jj + BLOCK_SIZE, N);
 
-            // For each block of C (C[ii..ii+BLOCK][jj..jj+BLOCK])
-            // We iterate over the 'k' dimension (kk)
-            for (int kk = 0; kk < n; kk += BLOCK_SIZE)
-            {
-
-                // --- Micro-Kernel (Sequential AVX2 optimized via flags) ---
-                for (int i = ii; i < min(ii + BLOCK_SIZE, n); i++)
-                {
-                    for (int k = kk; k < min(kk + BLOCK_SIZE, n); k++)
-                    {
-
-                        // '#pragma omp simd' helps if -O3 doesn't auto-vectorize,
-                        // but standard -O3 usually handles this innermost loop well.
-                        // #pragma omp simd
-                        for (int j = jj; j < min(jj + BLOCK_SIZE, n); j++)
-                        {
-                            c[i][j] += a[i][k] * b[k][j];
+                // Standard IKJ micro-kernel
+                for (int i = ii; i < i_max; i++) {
+                    for (int k = kk; k < k_max; k++) {
+                        
+                        double r = a[i][k];
+                        
+                        /* * 5. SIMD VECTORIZATION
+                         * #pragma omp simd: Forces vector instructions.
+                         * - Machine 210: Uses AVX2/FMA (4 doubles/cycle).
+                         * - Machine AMD: Uses AVX-512 (8 doubles/cycle).
+                         */
+                        #pragma omp simd
+                        for (int j = jj; j < j_max; j++) {
+                            c[i][j] += r * b[k][j];
                         }
                     }
                 }
             }
         }
     }
-
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // HOTSPOT END
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     // TMP: Change this logic to unify correctly with previous parallel region
     #ifdef ENABLE_TIMING
@@ -121,31 +152,20 @@ int main(int argc, char **argv)
             #pragma omp single
             nthreads = omp_get_num_threads();
         }
-        fprintf(stderr, "[omp-opt] n=%d threads=%d elapsed=%.3f s\n", n, nthreads, time_taken);
+        fprintf(stderr, "[omp] N=%d threads=%d elapsed=%.3f s\n", N, nthreads, time_taken);
     #endif
 
-    /* Dump results */
+    /* Dump results for verification */
     FILE *f = fopen("mat-res.txt", "w");
-    if (!f)
-    {
-        perror("fopen");
-        return 1;
-    }
-
-    fprintf(f, "%d\n\n", n);
-    for (int i = 0; i < 1000; i++)
-    {
-        for (int j = 0; j < 1000; j++)
-        {
-            fprintf(f, "%.0f ", c[i][j]);
+    if (f) {
+        fprintf(f, "%d\n\n", N);
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 0; j < 1000; j++) fprintf(f, "%.0f ", c[i][j]);
+            fprintf(f, "\n");
         }
-        fprintf(f, "\n");
+        fclose(f);
     }
 
-    fclose(f);
-
-    free(a);
-    free(b);
-    free(c);
+    free(a); free(b); free(c);
     return 0;
 }
