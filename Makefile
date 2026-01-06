@@ -2,7 +2,7 @@
 # for intel stuff: source /opt/intel/oneapi/setvars.sh
 CC            = gcc        # options: gcc, icc, icx
 MPICC         = mpicc     # or mpicc for gcc
-BASE_CFLAGS   = -O3 -march=native # -ffast-math
+BASE_CFLAGS   = -O3 -march=native -pg # -ffast-math
 OMP_FLAG      = -fopenmp
 LDFLAGS       =
 
