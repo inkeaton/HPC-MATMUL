@@ -127,8 +127,8 @@ int main(int argc, char *argv[]) {
     if (rank == 0) {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                a[i][j] = (double)rand() / RAND_MAX;
-                b[i][j] = ((double)rand() / RAND_MAX) * 10.0;
+                a[i][j] = 2.0;
+                b[i][j] = 3.0;
                 c[i][j] = 0.0;
             }
         }
