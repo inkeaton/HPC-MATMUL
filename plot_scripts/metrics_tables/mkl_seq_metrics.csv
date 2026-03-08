@@ -1,0 +1,17 @@
+CPU,Compiler,Test,N,Align,Restrict,Threads/Ranks,TileSize,Time_s,GFLOPS,Speedup_vs_seq
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,4096,1,1,1,-,2.23,61.6318,8.8283
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,4100,1,1,1,-,2.213,62.2874,8.5685
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,8192,1,1,1,-,17.617,62.412,9.663
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,8200,1,1,1,-,17.674,62.3931,8.6409
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,12288,1,1,1,-,59.31,62.5671,9.6013
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,12300,1,1,1,-,59.589,62.4567,9.6079
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,16400,1,1,1,-,141.197,62.4793,9.6176
+12th Gen Intel(R) Core(TM) i9-12900K,icc,mkl-seq,16384,1,1,1,-,140.919,62.4195,9.6673
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,4096,1,1,1,-,2.211,62.1614,8.9041
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,4100,1,1,1,-,2.212,62.3156,8.5723
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,8192,1,1,1,-,17.618,62.4084,9.6624
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,8200,1,1,1,-,17.654,62.4638,8.6507
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,12288,1,1,1,-,59.311,62.566,9.6012
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,12300,1,1,1,-,59.632,62.4117,9.601
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,16384,1,1,1,-,140.867,62.4425,9.6709
+12th Gen Intel(R) Core(TM) i9-12900K,icx,mkl-seq,16400,1,1,1,-,141.348,62.4125,9.6073
