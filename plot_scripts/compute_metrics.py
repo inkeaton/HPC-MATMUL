@@ -3,9 +3,11 @@ compute_metrics.py
 ------------------
 For each benchmark part compute:
 
-    GFLOPS         = 2 * N^3 / (Time_s * 1e9)
-    Speedup_vs_seq = T_baseline / Time_s
-    Efficiency     = Speedup_vs_seq / p        (OMP & MPI only, p = threads/ranks)
+    GFLOPS           = 2 * N^3 / (Time_s * 1e9)
+    Speedup_vs_seq   = T_baseline / Time_s
+    Efficiency_%     = (Speedup_vs_seq / p) * 100   (OMP & MPI only, p = threads/ranks)
+
+All float values are rounded to 2 decimal places.
 
 Baseline = gcc seq-ikj, Align=0, Restrict=0, same N
            (plain sequential loop, no alignment hint, no restrict)
@@ -54,30 +56,38 @@ print()
 # ── Helper functions ─────────────────────────────────────────────────────────
 
 def gflops(N, T):
-    return round(2.0 * float(N)**3 / (T * 1e9), 4)
+    return round(2.0 * float(N)**3 / (T * 1e9), 2)
 
 def speedup(N, T):
     tb = baseline.get(int(N))
-    return round(tb / T, 4) if tb is not None else None
+    return round(tb / T, 2) if tb is not None else None
 
-def efficiency(N, T, p):
+def efficiency_pct(N, T, p):
+    """Parallel efficiency as a percentage: (Speedup / p) * 100."""
     s = speedup(N, T)
-    return round(s / p, 4) if (s is not None and p > 0) else None
+    return round((s / p) * 100.0, 2) if (s is not None and p > 0) else None
+
+
+def round_floats(df):
+    """Round every float column to 2 decimal places."""
+    float_cols = df.select_dtypes(include="float").columns
+    df[float_cols] = df[float_cols].round(2)
+    return df
 
 
 def add_seq_metrics(df):
     df = df.copy()
-    df["GFLOPS"]        = df.apply(lambda r: gflops(r["N"], r["Time_s"]),  axis=1)
+    df["GFLOPS"]         = df.apply(lambda r: gflops(r["N"], r["Time_s"]),  axis=1)
     df["Speedup_vs_seq"] = df.apply(lambda r: speedup(r["N"], r["Time_s"]), axis=1)
-    return df
+    return round_floats(df)
 
 
 def add_parallel_metrics(df):
     df = df.copy()
-    df["GFLOPS"]         = df.apply(lambda r: gflops(r["N"], r["Time_s"]),                    axis=1)
-    df["Speedup_vs_seq"] = df.apply(lambda r: speedup(r["N"], r["Time_s"]),                    axis=1)
-    df["Efficiency"]     = df.apply(lambda r: efficiency(r["N"], r["Time_s"], r["Threads/Ranks"]), axis=1)
-    return df
+    df["GFLOPS"]         = df.apply(lambda r: gflops(r["N"], r["Time_s"]),                         axis=1)
+    df["Speedup_vs_seq"] = df.apply(lambda r: speedup(r["N"], r["Time_s"]),                         axis=1)
+    df["Efficiency_%"]   = df.apply(lambda r: efficiency_pct(r["N"], r["Time_s"], r["Threads/Ranks"]), axis=1)
+    return round_floats(df)
 
 
 def save_type(df, test_name, out_dir, label=""):
@@ -109,7 +119,7 @@ print()
 # OMP  (+Efficiency)
 # ══════════════════════════════════════════════════════════════════════════════
 print("=" * 62)
-print("OMP  —  omp-ikj | omp-tile | mkl-omp   [+Efficiency = Speedup/p]")
+print("OMP  —  omp-ikj | omp-tile | mkl-omp   [+Efficiency_% = (Speedup/p)*100]")
 print("=" * 62)
 omp_m = add_parallel_metrics(omp_df)
 for t in ["omp-ikj", "omp-tile", "mkl-omp"]:
@@ -123,7 +133,7 @@ print()
 # MPI  (+Efficiency)
 # ══════════════════════════════════════════════════════════════════════════════
 print("=" * 62)
-print("MPI  —  mpi-ikj | mpi-cannon | mpi-summa | scalapack   [+Efficiency]")
+print("MPI  —  mpi-ikj | mpi-cannon | mpi-summa | scalapack   [+Efficiency_%]")
 print("=" * 62)
 mpi_m = add_parallel_metrics(mpi_df)
 for t in ["mpi-ikj", "mpi-cannon", "mpi-summa", "scalapack"]:
@@ -158,6 +168,7 @@ cuda_long = cuda_df[["N", "cublas", "tile-16", "tile-32"]].melt(
 # Add metrics
 cuda_long["GFLOPS"]         = cuda_long.apply(lambda r: gflops(r["N"], r["Time_s"]),  axis=1)
 cuda_long["Speedup_vs_seq"] = cuda_long.apply(lambda r: speedup(r["N"], r["Time_s"]), axis=1)
+cuda_long = round_floats(cuda_long)
 
 # Sort nicely
 cuda_long = cuda_long.sort_values(["Test", "N"]).reset_index(drop=True)
@@ -184,40 +195,40 @@ print("=" * 72)
 
 # SEQ
 print("\n[SEQ]")
-print(f"  {'Test':<12} {'N':>6}  {'Time_s':>10}  {'GFLOPS':>8}  {'Speedup':>8}  Compiler")
-print(f"  {'-'*12} {'-'*6}  {'-'*10}  {'-'*8}  {'-'*8}  {'-'*10}")
+print(f"  {'Test':<12} {'N':>6}  {'Time_s':>8}  {'GFLOPS':>8}  {'Speedup':>8}  Compiler")
+print(f"  {'-'*12} {'-'*6}  {'-'*8}  {'-'*8}  {'-'*8}  {'-'*10}")
 best_seq = seq_m.sort_values("Time_s").groupby(["Test","N"]).first().reset_index()
 for _, r in best_seq.sort_values(["Test","N"]).iterrows():
     sp = r["Speedup_vs_seq"]
-    print(f"  {r['Test']:<12} {int(r['N']):>6}  {r['Time_s']:>10.3f}  {r['GFLOPS']:>8.3f}  {sp:>8.4f}  {r['Compiler']}")
+    print(f"  {r['Test']:<12} {int(r['N']):>6}  {r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp:>8.2f}  {r['Compiler']}")
 
 # OMP
 print("\n[OMP]  (p = threads used for best run)")
-print(f"  {'Test':<12} {'N':>6}  {'p':>3}  {'Time_s':>10}  {'GFLOPS':>8}  {'Speedup':>8}  {'Effic.':>7}  Compiler")
-print(f"  {'-'*12} {'-'*6}  {'-'*3}  {'-'*10}  {'-'*8}  {'-'*8}  {'-'*7}  {'-'*10}")
+print(f"  {'Test':<12} {'N':>6}  {'p':>3}  {'Time_s':>8}  {'GFLOPS':>8}  {'Speedup':>8}  {'Effic.%':>8}  Compiler")
+print(f"  {'-'*12} {'-'*6}  {'-'*3}  {'-'*8}  {'-'*8}  {'-'*8}  {'-'*8}  {'-'*10}")
 best_omp = omp_m.sort_values("Time_s").groupby(["Test","N"]).first().reset_index()
 for _, r in best_omp.sort_values(["Test","N"]).iterrows():
-    sp = r["Speedup_vs_seq"]; ef = r["Efficiency"]
+    sp = r["Speedup_vs_seq"]; ef = r["Efficiency_%"]
     print(f"  {r['Test']:<12} {int(r['N']):>6}  {int(r['Threads/Ranks']):>3}  "
-          f"{r['Time_s']:>10.3f}  {r['GFLOPS']:>8.3f}  {sp:>8.4f}  {ef:>7.4f}  {r['Compiler']}")
+          f"{r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp:>8.2f}  {ef:>8.2f}  {r['Compiler']}")
 
 # MPI
 print("\n[MPI]  (p = ranks used for best run)")
-print(f"  {'Test':<12} {'N':>6}  {'p':>3}  {'Time_s':>10}  {'GFLOPS':>8}  {'Speedup':>8}  {'Effic.':>7}  Compiler")
-print(f"  {'-'*12} {'-'*6}  {'-'*3}  {'-'*10}  {'-'*8}  {'-'*8}  {'-'*7}  {'-'*10}")
+print(f"  {'Test':<12} {'N':>6}  {'p':>3}  {'Time_s':>8}  {'GFLOPS':>8}  {'Speedup':>8}  {'Effic.%':>8}  Compiler")
+print(f"  {'-'*12} {'-'*6}  {'-'*3}  {'-'*8}  {'-'*8}  {'-'*8}  {'-'*8}  {'-'*10}")
 best_mpi = mpi_m.sort_values("Time_s").groupby(["Test","N"]).first().reset_index()
 for _, r in best_mpi.sort_values(["Test","N"]).iterrows():
-    sp = r["Speedup_vs_seq"]; ef = r["Efficiency"]
+    sp = r["Speedup_vs_seq"]; ef = r["Efficiency_%"]
     print(f"  {r['Test']:<12} {int(r['N']):>6}  {int(r['Threads/Ranks']):>3}  "
-          f"{r['Time_s']:>10.3f}  {r['GFLOPS']:>8.3f}  {sp:>8.4f}  {ef:>7.4f}  {r['Compiler']}")
+          f"{r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp:>8.2f}  {ef:>8.2f}  {r['Compiler']}")
 
 # CUDA
 print("\n[CUDA]  (baseline = same gcc seq-ikj for same N)")
-print(f"  {'Test':<10} {'N':>6}  {'Time_s':>10}  {'GFLOPS':>8}  {'Speedup':>8}")
-print(f"  {'-'*10} {'-'*6}  {'-'*10}  {'-'*8}  {'-'*8}")
+print(f"  {'Test':<10} {'N':>6}  {'Time_s':>8}  {'GFLOPS':>8}  {'Speedup':>8}")
+print(f"  {'-'*10} {'-'*6}  {'-'*8}  {'-'*8}  {'-'*8}")
 for _, r in cuda_long.sort_values(["Test","N"]).iterrows():
     sp = r["Speedup_vs_seq"]
-    print(f"  {r['Test']:<10} {int(r['N']):>6}  {r['Time_s']:>10.3f}  {r['GFLOPS']:>8.3f}  {sp:>8.4f}")
+    print(f"  {r['Test']:<10} {int(r['N']):>6}  {r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp:>8.2f}")
 
 print()
 print(f"All CSV tables saved to: {OUT_DIR}")

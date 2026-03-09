@@ -1,0 +1,18 @@
+\begin{table}[h!]
+  \centering
+  \caption{CUDA shared-memory tiled kernel (tile $=16$) -- NVIDIA Tesla T4}
+  \label{tab:cuda_tile16}
+  \begin{tabular}{rlrrr}
+    \toprule
+    \textbf{$N$} & \textbf{Kernel} & \textbf{Time (s)} & \textbf{GFLOPS} & \textbf{Speedup} \\
+    \midrule
+    4100 & tile-16 & 0.78 & 176.27 & 24.25 \\
+    \midrule
+    8200 & tile-16 & 5.49 & 200.75 & 27.80 \\
+    \midrule
+    12300 & tile-16 & 19.35 & 192.35 & 29.59 \\
+    \midrule
+    16400 & tile-16 & 47.54 & 185.56 & 28.56 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

@@ -1,0 +1,18 @@
+\begin{table}[h!]
+  \centering
+  \caption{CUDA cuBLAS DGEMM -- NVIDIA Tesla T4}
+  \label{tab:cuda_cublas}
+  \begin{tabular}{rlrrr}
+    \toprule
+    \textbf{$N$} & \textbf{Kernel} & \textbf{Time (s)} & \textbf{GFLOPS} & \textbf{Speedup} \\
+    \midrule
+    4100 & cublas & 0.57 & 240.98 & 33.15 \\
+    \midrule
+    8200 & cublas & 4.59 & 240.35 & 33.29 \\
+    \midrule
+    12300 & cublas & 15.65 & 237.80 & 36.58 \\
+    \midrule
+    16400 & cublas & 36.43 & 242.15 & 37.27 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
