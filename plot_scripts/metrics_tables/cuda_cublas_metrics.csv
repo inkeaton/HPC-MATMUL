@@ -1,5 +1,5 @@
-N,Test,Time_s,GFLOPS,Speedup_vs_seq
-4100,cublas,0.57,240.98,33.15
-8200,cublas,4.59,240.35,33.29
-12300,cublas,15.65,237.8,36.58
-16400,cublas,36.43,242.15,37.27
+N,Test,Time_s,GFLOPS,Speedup
+4100,cublas,0.57,240.98,3.86
+8200,cublas,4.59,240.35,3.85
+12300,cublas,15.65,237.8,3.81
+16400,cublas,36.43,242.15,3.88

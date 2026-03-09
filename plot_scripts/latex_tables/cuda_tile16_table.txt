@@ -6,13 +6,13 @@
     \toprule
     \textbf{$N$} & \textbf{Kernel} & \textbf{Time (s)} & \textbf{GFLOPS} & \textbf{Speedup} \\
     \midrule
-    4100 & tile-16 & 0.78 & 176.27 & 24.25 \\
+    4100 & tile-16 & 0.78 & 176.27 & 2.83 \\
     \midrule
-    8200 & tile-16 & 5.49 & 200.75 & 27.80 \\
+    8200 & tile-16 & 5.49 & 200.75 & 3.21 \\
     \midrule
-    12300 & tile-16 & 19.35 & 192.35 & 29.59 \\
+    12300 & tile-16 & 19.35 & 192.35 & 3.08 \\
     \midrule
-    16400 & tile-16 & 47.54 & 185.56 & 28.56 \\
+    16400 & tile-16 & 47.54 & 185.56 & 2.97 \\
     \bottomrule
   \end{tabular}
 \end{table}

@@ -28,7 +28,7 @@ SEQ_IKJ_COLS = [
     ("Restrict",       "Restrict",       "c"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
 ]
 
 SEQ_PAD_COLS = SEQ_IKJ_COLS   # same shape
@@ -39,7 +39,7 @@ SEQ_TILE_COLS = [
     ("TileSize",       "Tile",           "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
 ]
 
 MKL_SEQ_COLS = [
@@ -47,7 +47,7 @@ MKL_SEQ_COLS = [
     ("Compiler",       "Compiler",       "l"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
 ]
 
 CUDA_COLS = [
@@ -55,7 +55,7 @@ CUDA_COLS = [
     ("Test",           "Kernel",         "l"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
 ]
 
 OMP_IKJ_COLS = [
@@ -64,7 +64,7 @@ OMP_IKJ_COLS = [
     ("Threads/Ranks",  "Threads",        "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
     ("Efficiency_%",   r"Efficiency (\%)", "r"),
 ]
 
@@ -75,7 +75,7 @@ OMP_TILE_COLS = [
     ("TileSize",       "Tile",           "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
     ("Efficiency_%",   r"Efficiency (\%)", "r"),
 ]
 
@@ -85,7 +85,7 @@ MKL_OMP_COLS = [
     ("Threads/Ranks",  "Threads",        "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
     ("Efficiency_%",   r"Efficiency (\%)", "r"),
 ]
 
@@ -95,7 +95,7 @@ MPI_IKJ_COLS = [
     ("Threads/Ranks",  "Ranks",          "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
     ("Efficiency_%",   r"Efficiency (\%)", "r"),
 ]
 
@@ -109,7 +109,7 @@ SCALAPACK_COLS = [
     ("TileSize",       "Tile",           "r"),
     ("Time_s",         "Time (s)",       "r"),
     ("GFLOPS",         "GFLOPS",         "r"),
-    ("Speedup_vs_seq", "Speedup",        "r"),
+    ("Speedup", "Speedup",        "r"),
     ("Efficiency_%",   r"Efficiency (\%)", "r"),
 ]
 
