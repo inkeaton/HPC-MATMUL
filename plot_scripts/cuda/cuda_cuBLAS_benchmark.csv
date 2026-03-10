@@ -1,0 +1,9 @@
+MatrixSize,Algorithm,Precision,Time_s
+4100,cuBLAS,Double,0.687
+4100,cuBLAS,Float,0.055
+8200,cuBLAS,Double,4.571
+8200,cuBLAS,Float,0.307
+12300,cuBLAS,Double,14.985
+12300,cuBLAS,Float,0.875
+16400,cuBLAS,Double,35.138
+16400,cuBLAS,Float,2.100

@@ -1,6 +1,3 @@
-% master.tex  –  compile with:  pdflatex master.tex
-% Requires: \usepackage{booktabs} in your preamble
-
 \documentclass{article}
 \usepackage[a4paper, margin=2cm]{geometry}
 \usepackage{booktabs}
@@ -9,10 +6,8 @@
 
 \begin{document}
 
-\section*{SEQ}
+\section*{Sequential (SEQ)}
 \input{seq_ikj_table.txt}
-\medskip
-\input{seq_pad_table.txt}
 \medskip
 \input{seq_tile_table.txt}
 \medskip
@@ -24,15 +19,15 @@
 
 \input{cuda_all_table.txt}
 \medskip
+\input{cuda_naive_table.txt}
+\medskip
+\input{cuda_shared_table.txt}
+\medskip
 \input{cuda_cublas_table.txt}
-\medskip
-\input{cuda_tile16_table.txt}
-\medskip
-\input{cuda_tile32_table.txt}
 \medskip
 
 \clearpage
-\section*{OMP}
+\section*{OpenMP (OMP)}
 
 \input{omp_ikj_table.txt}
 \medskip
@@ -50,7 +45,4 @@
 \medskip
 \input{mpi_summa_table.txt}
 \medskip
-\input{scalapack_table.txt}
-\medskip
-
 \end{document}

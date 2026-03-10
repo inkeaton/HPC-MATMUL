@@ -1,18 +1,22 @@
 \begin{table}[h!]
   \centering
-  \caption{CUDA cuBLAS DGEMM -- NVIDIA Tesla T4}
+  \caption{CUDA cuBLAS Library performance}
   \label{tab:cuda_cublas}
-  \begin{tabular}{rlrrr}
+  \begin{tabular}{rlcccrrr}
     \toprule
-    \textbf{$N$} & \textbf{Kernel} & \textbf{Time (s)} & \textbf{GFLOPS} & \textbf{Speedup} \\
+    \textbf{$N$} & \textbf{Kernel} & \textbf{Prec.} & \textbf{Block} & \textbf{Tile} & \textbf{Time (s)} & \textbf{GFLOPS} & \textbf{Speedup} \\
     \midrule
-    4100 & cublas & 0.57 & 240.98 & 3.86 \\
+    4100 & cuBLAS & Double & -- & -- & 0.69 & 200.64 & 3.22 \\
+    4100 & cuBLAS & Float & -- & -- & 0.06 & 2506.22 & 40.18 \\
     \midrule
-    8200 & cublas & 4.59 & 240.35 & 3.85 \\
+    8200 & cuBLAS & Double & -- & -- & 4.57 & 241.25 & 3.86 \\
+    8200 & cuBLAS & Float & -- & -- & 0.31 & 3591.97 & 57.49 \\
     \midrule
-    12300 & cublas & 15.65 & 237.80 & 3.81 \\
+    12300 & cuBLAS & Double & -- & -- & 14.98 & 248.36 & 3.98 \\
+    12300 & cuBLAS & Float & -- & -- & 0.88 & 4253.41 & 68.10 \\
     \midrule
-    16400 & cublas & 36.43 & 242.15 & 3.88 \\
+    16400 & cuBLAS & Double & -- & -- & 35.14 & 251.06 & 4.02 \\
+    16400 & cuBLAS & Float & -- & -- & 2.10 & 4200.90 & 67.24 \\
     \bottomrule
   \end{tabular}
 \end{table}

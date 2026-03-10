@@ -1,6 +1,6 @@
 \begin{table}[h!]
   \centering
-  \caption{Sequential cache-tiled matrix multiplication -- Intel i9-12900K}
+  \caption{Sequential cache-tiled matrix multiplication}
   \label{tab:seq_tile}
   \begin{tabular}{rlrrrr}
     \toprule
@@ -31,7 +31,7 @@
     12288 & gcc & 64 & 355.66 & 10.43 & 1.60 \\
     12288 & gcc & 128 & 330.18 & 11.24 & 1.72 \\
     \midrule
-    12300 & gcc & 16 & 152.00 & 24.49 & 5.03 \\
+    12300 & gcc & 16 & 152 & 24.49 & 5.03 \\
     12300 & gcc & 32 & 159.51 & 23.33 & 4.79 \\
     12300 & gcc & 64 & 103.54 & 35.95 & 7.38 \\
     12300 & gcc & 128 & 128.68 & 28.92 & 5.94 \\
@@ -56,7 +56,7 @@
     4100 & icc & 64 & 8.24 & 16.74 & 3.29 \\
     4100 & icc & 128 & 6.13 & 22.50 & 4.42 \\
     \midrule
-    8192 & icc & 16 & 84.99 & 12.94 & 2.00 \\
+    8192 & icc & 16 & 84.99 & 12.94 & 2 \\
     8192 & icc & 32 & 101.16 & 10.87 & 1.68 \\
     8192 & icc & 64 & 126.53 & 8.69 & 1.35 \\
     8192 & icc & 128 & 105.83 & 10.39 & 1.61 \\

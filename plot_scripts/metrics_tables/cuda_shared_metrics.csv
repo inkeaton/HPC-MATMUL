@@ -1,8 +1,4 @@
 N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
-4100,Naive,Double,16x16,,0.72,"dim.blocks: 16x16, Double",192.52,3.09
-4100,Naive,Double,32x8,,0.77,"dim.blocks: 32x8, Double",178.09,2.86
-4100,Naive,Double,32x16,,0.73,"dim.blocks: 32x16, Double",188.57,3.02
-4100,Naive,Double,32x32,,0.82,"dim.blocks: 32x32, Double",167.9,2.69
 4100,Shared,Double,16x16,16.0,0.59,"dim.blocks: 16x16, tile 16, Double",233.24,3.74
 4100,Shared,Double,32x8,16.0,0.62,"dim.blocks: 32x8, tile 16, Double",223.41,3.58
 4100,Shared,Double,32x16,16.0,0.61,"dim.blocks: 32x16, tile 16, Double",224.5,3.6
@@ -11,10 +7,6 @@ N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
 4100,Shared,Float,32x16,32.0,0.21,"dim.blocks: 32x16, tile 32, Float",659.53,10.57
 4100,Shared,Float,64x8,32.0,0.2,"dim.blocks: 64x8, tile 32, Float",706.88,11.33
 4100,Shared,Float,32x16,64.0,0.16,"dim.blocks: 32x16, tile 64, Float",861.51,13.81
-8200,Naive,Double,16x16,,5.86,"dim.blocks: 16x16, Double",188.31,3.01
-8200,Naive,Double,32x8,,6.93,"dim.blocks: 32x8, Double",159.12,2.55
-8200,Naive,Double,32x16,,7.1,"dim.blocks: 32x16, Double",155.4,2.49
-8200,Naive,Double,32x32,,7.61,"dim.blocks: 32x32, Double",144.91,2.32
 8200,Shared,Double,16x16,16.0,5.03,"dim.blocks: 16x16, tile 16, Double",219.36,3.51
 8200,Shared,Double,32x8,16.0,5.3,"dim.blocks: 32x8, tile 16, Double",208.14,3.33
 8200,Shared,Double,32x16,16.0,5.23,"dim.blocks: 32x16, tile 16, Double",210.81,3.37
@@ -23,10 +15,6 @@ N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
 8200,Shared,Float,32x16,32.0,1.62,"dim.blocks: 32x16, tile 32, Float",679.86,10.88
 8200,Shared,Float,64x8,32.0,1.82,"dim.blocks: 64x8, tile 32, Float",604.24,9.67
 8200,Shared,Float,32x16,64.0,1.48,"dim.blocks: 32x16, tile 64, Float",747.11,11.96
-12300,Naive,Double,16x16,,22.87,"dim.blocks: 16x16, Double",162.73,2.61
-12300,Naive,Double,32x8,,48.32,"dim.blocks: 32x8, Double",77.02,1.23
-12300,Naive,Double,32x16,,44.9,"dim.blocks: 32x16, Double",82.88,1.33
-12300,Naive,Double,32x32,,43.46,"dim.blocks: 32x32, Double",85.64,1.37
 12300,Shared,Double,16x16,16.0,19.45,"dim.blocks: 16x16, tile 16, Double",191.38,3.06
 12300,Shared,Double,32x8,16.0,20.24,"dim.blocks: 32x8, tile 16, Double",183.86,2.94
 12300,Shared,Double,32x16,16.0,19.13,"dim.blocks: 32x16, tile 16, Double",194.52,3.11
@@ -35,10 +23,6 @@ N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
 12300,Shared,Float,32x16,32.0,5.85,"dim.blocks: 32x16, tile 32, Float",636.3,10.19
 12300,Shared,Float,64x8,32.0,6.65,"dim.blocks: 64x8, tile 32, Float",559.83,8.96
 12300,Shared,Float,32x16,64.0,5.46,"dim.blocks: 32x16, tile 64, Float",682.01,10.92
-16400,Naive,Double,16x16,,56.49,"dim.blocks: 16x16, Double",156.18,2.5
-16400,Naive,Double,32x8,,106.78,"dim.blocks: 32x8, Double",82.62,1.32
-16400,Naive,Double,32x16,,102.3,"dim.blocks: 32x16, Double",86.24,1.38
-16400,Naive,Double,32x32,,103.6,"dim.blocks: 32x32, Double",85.16,1.36
 16400,Shared,Double,16x16,16.0,45.09,"dim.blocks: 16x16, tile 16, Double",195.65,3.13
 16400,Shared,Double,32x8,16.0,47.34,"dim.blocks: 32x8, tile 16, Double",186.35,2.98
 16400,Shared,Double,32x16,16.0,44.68,"dim.blocks: 32x16, tile 16, Double",197.46,3.16
@@ -47,27 +31,3 @@ N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
 16400,Shared,Float,32x16,32.0,13.79,"dim.blocks: 32x16, tile 32, Float",639.87,10.24
 16400,Shared,Float,64x8,32.0,17.66,"dim.blocks: 64x8, tile 32, Float",499.54,8.0
 16400,Shared,Float,32x16,64.0,13.14,"dim.blocks: 32x16, tile 64, Float",671.33,10.74
-4100,Naive,Float,16x16,,0.34,"dim.blocks: 16x16, Float",401.87,6.44
-4100,Naive,Float,32x8,,0.44,"dim.blocks: 32x8, Float",310.45,4.98
-4100,Naive,Float,32x16,,0.31,"dim.blocks: 32x16, Float",450.46,7.22
-4100,Naive,Float,32x32,,0.26,"dim.blocks: 32x32, Float",522.13,8.37
-8200,Naive,Float,16x16,,3.2,"dim.blocks: 16x16, Float",344.39,5.51
-8200,Naive,Float,32x8,,4.95,"dim.blocks: 32x8, Float",222.6,3.56
-8200,Naive,Float,32x16,,2.34,"dim.blocks: 32x16, Float",470.45,7.53
-8200,Naive,Float,32x32,,2.21,"dim.blocks: 32x32, Float",499.65,8.0
-12300,Naive,Float,16x16,,17.0,"dim.blocks: 16x16, Float",218.87,3.5
-12300,Naive,Float,32x8,,25.91,"dim.blocks: 32x8, Float",143.66,2.3
-12300,Naive,Float,32x16,,10.61,"dim.blocks: 32x16, Float",350.88,5.62
-12300,Naive,Float,32x32,,10.84,"dim.blocks: 32x32, Float",343.49,5.5
-16400,Naive,Float,16x16,,101.08,"dim.blocks: 16x16, Float",87.27,1.4
-16400,Naive,Float,32x8,,122.99,"dim.blocks: 32x8, Float",71.73,1.15
-16400,Naive,Float,32x16,,26.05,"dim.blocks: 32x16, Float",338.69,5.42
-16400,Naive,Float,32x32,,29.26,"dim.blocks: 32x32, Float",301.51,4.83
-4100,cuBLAS,Double,,,0.69,"Library, Double",200.64,3.22
-4100,cuBLAS,Float,,,0.06,"Library, Float",2506.22,40.18
-8200,cuBLAS,Double,,,4.57,"Library, Double",241.25,3.86
-8200,cuBLAS,Float,,,0.31,"Library, Float",3591.97,57.49
-12300,cuBLAS,Double,,,14.98,"Library, Double",248.36,3.98
-12300,cuBLAS,Float,,,0.88,"Library, Float",4253.41,68.1
-16400,cuBLAS,Double,,,35.14,"Library, Double",251.06,4.02
-16400,cuBLAS,Float,,,2.1,"Library, Float",4200.9,67.24

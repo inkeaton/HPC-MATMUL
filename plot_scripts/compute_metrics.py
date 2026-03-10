@@ -22,8 +22,10 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 SEQ_CSV  = os.path.join(SCRIPT_DIR, "seq",  "benchmark_results_seq.csv")
 OMP_CSV  = os.path.join(SCRIPT_DIR, "omp",  "benchmark_results_omp_updated.csv")
-MPI_CSV  = os.path.join(SCRIPT_DIR, "mpi",  "benchmark_results_mpi.csv")
-CUDA_CSV = os.path.join(SCRIPT_DIR, "cuda", "cuda_matrix_benchmark_times.csv")
+MPI_CSV  = os.path.join(SCRIPT_DIR, "mpi",  "benchmark_results_mpi_updated.csv")
+
+CUDA_SN_CSV = os.path.join(SCRIPT_DIR, "cuda", "cuda_shared_naive_benchmark.csv")
+CUDA_CB_CSV = os.path.join(SCRIPT_DIR, "cuda", "cuda_cuBLAS_benchmark.csv")
 
 OUT_DIR = os.path.join(SCRIPT_DIR, "metrics_tables")
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -34,7 +36,9 @@ os.makedirs(OUT_DIR, exist_ok=True)
 seq_df  = pd.read_csv(SEQ_CSV) if os.path.exists(SEQ_CSV) else pd.DataFrame()
 omp_df  = pd.read_csv(OMP_CSV) if os.path.exists(OMP_CSV) else pd.DataFrame()
 mpi_df  = pd.read_csv(MPI_CSV) if os.path.exists(MPI_CSV) else pd.DataFrame()
-cuda_df = pd.read_csv(CUDA_CSV) if os.path.exists(CUDA_CSV) else pd.DataFrame()
+
+cuda_sn_df = pd.read_csv(CUDA_SN_CSV) if os.path.exists(CUDA_SN_CSV) else pd.DataFrame()
+cuda_cb_df = pd.read_csv(CUDA_CB_CSV) if os.path.exists(CUDA_CB_CSV) else pd.DataFrame()
 
 
 # ── BASELINE 1: gcc seq-ikj (Per calcolare lo speedup dei test sequenziali) ──
@@ -198,39 +202,85 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 # CUDA (Usa mkl-seq come baseline)
 # ══════════════════════════════════════════════════════════════════════════════
-print("=" * 66)
-print("CUDA  —  cublas | tile-16 | tile-32   [Baseline: best seq]")
-print("=" * 66)
+print("=" * 75)
+print("CUDA — Analisi Metriche (Naive, Shared, cuBLAS) [Baseline: best seq (MKL)]")
+print("=" * 75)
 
-if not cuda_df.empty:
-    cuda_df["N"] = cuda_df["matrix_size"].str.split("*").str[0].astype(int)
-    cuda_df = cuda_df.rename(columns={
-        "cublas_time":           "cublas",
-        "shared_tiling_16_time": "tile-16",
-        "shared_tiling_32_time": "tile-32",
-    })
+# Percorsi dei nuovi file
+CUDA_SN_CSV = os.path.join(SCRIPT_DIR, "cuda", "cuda_shared_naive_benchmark.csv")
+CUDA_CB_CSV = os.path.join(SCRIPT_DIR, "cuda", "cuda_cuBLAS_benchmark.csv")
 
-    cuda_long = cuda_df[["N", "cublas", "tile-16", "tile-32"]].melt(
-        id_vars="N", var_name="Test", value_name="Time_s"
-    )
+# Caricamento
+cuda_sn_df = pd.read_csv(CUDA_SN_CSV) if os.path.exists(CUDA_SN_CSV) else pd.DataFrame()
+cuda_cb_df = pd.read_csv(CUDA_CB_CSV) if os.path.exists(CUDA_CB_CSV) else pd.DataFrame()
 
-    cuda_long["GFLOPS"]  = cuda_long.apply(lambda r: gflops(r["N"], r["Time_s"]), axis=1)
-    cuda_long["Speedup"] = cuda_long.apply(lambda r: speedup(r["N"], r["Time_s"], baseline_mkl), axis=1)
-    cuda_long = round_floats(cuda_long)
+if not cuda_sn_df.empty or not cuda_cb_df.empty:
+    # 1. Standardizzazione cuBLAS (N, Algorithm, Precision, Time_s)
+    if not cuda_cb_df.empty:
+        cuda_cb_df = cuda_cb_df.rename(columns={'MatrixSize': 'N'})
+        cuda_cb_df['BlockDim'] = ""
+        cuda_cb_df['TileSize'] = ""
+    
+    # 2. Standardizzazione Naive/Shared (N, Algorithm, Precision, BlockDim, TileSize, Time_s)
+    if not cuda_sn_df.empty:
+        cuda_sn_df = cuda_sn_df.rename(columns={'MatrixSize': 'N'})
+    
+    # 3. Unione dei dataset
+    cuda_combined = pd.concat([cuda_sn_df, cuda_cb_df], ignore_index=True)
+    
+    # 4. Formattazione Colonna Configurazione (BlockDim + Tile + Precision)
+    def format_cuda_cfg(row):
+        prec = row['Precision']
+        algo = row['Algorithm']
+        b_dim = str(row['BlockDim'])
+        t_size = str(row['TileSize'])
+        
+        if algo == 'cuBLAS':
+            return f"Library, {prec}"
+        
+        # Gestione Naive (senza Tile) e Shared (con Tile)
+        if t_size == "" or pd.isna(row['TileSize']) or t_size == "nan":
+            return f"dim.blocks: {b_dim}, {prec}"
+        else:
+            # Rimuove l'eventuale .0 se il tile è letto come float
+            t_str = str(int(float(t_size))) 
+            return f"dim.blocks: {b_dim}, tile {t_str}, {prec}"
 
-    cuda_long = cuda_long.sort_values(["Test", "N"]).reset_index(drop=True)
+    cuda_combined["Configuration"] = cuda_combined.apply(format_cuda_cfg, axis=1)
+    
+    # 5. Calcolo Metriche (GFLOPS e Speedup vs MKL)
+    cuda_combined["GFLOPS"]  = cuda_combined.apply(lambda r: gflops(r["N"], r["Time_s"]), axis=1)
+    cuda_combined["Speedup"] = cuda_combined.apply(lambda r: speedup(r["N"], r["Time_s"], baseline_mkl), axis=1)
+    
+    cuda_combined = round_floats(cuda_combined)
+    
+    # 6. Salvataggio CSV globale
+    cuda_combined.to_csv(os.path.join(OUT_DIR, "cuda_all_metrics.csv"), index=False)
+    
+    # 7. Salvataggio file separati per Algoritmo (Best per ogni N)
+    for algo in ["Naive", "Shared", "cuBLAS"]:
+        sub = cuda_combined[cuda_combined["Algorithm"] == algo].copy()
+        if not sub.empty:
+            # Salviamo tutto il set per l'algoritmo
+            fname = f"cuda_{algo.lower()}_metrics.csv"
+            sub.to_csv(os.path.join(OUT_DIR, fname), index=False)
+            print(f"  Saved {fname:38s} ({len(sub)} rows)")
 
-    for t in ["cublas", "tile-16", "tile-32"]:
-        sub = cuda_long[cuda_long["Test"] == t].copy()
-        fname = "cuda_" + t.replace("-", "") + "_metrics.csv"
-        sub.to_csv(os.path.join(OUT_DIR, fname), index=False)
-        print(f"  Saved {fname:38s}  ({len(sub)} rows)")
+    # 8. Visualizzazione SUMMARY a video
+    print("\n[CUDA SUMMARY] Migliori performance per Algoritmo/Precisione:")
+    print(f"  {'N':>6} | {'Algo':<8} | {'Prec':<7} | {'Time_s':>8} | {'GFLOPS':>9} | {'Speedup':>7}")
+    print("-" * 75)
+    
+    # Raggruppiamo per trovare il tempo minimo per ogni N, Algoritmo e Precisione
+    summary_cuda = cuda_combined.sort_values("Time_s").groupby(["N", "Algorithm", "Precision"]).first().reset_index()
+    
+    for _, r in summary_cuda.sort_values(["N", "Algorithm", "Precision"]).iterrows():
+        sp = r["Speedup"]
+        sp_str = f"{sp:>7.2f}" if pd.notna(sp) else f"{'N/A':>7}"
+        print(f"  {int(r['N']):>6} | {r['Algorithm']:<8} | {r['Precision']:<7} | {r['Time_s']:>8.3f} | {r['GFLOPS']:>9.2f} | {sp_str}")
 
-    cuda_long.to_csv(os.path.join(OUT_DIR, "cuda_all_metrics.csv"), index=False)
-    print(f"  Saved {'cuda_all_metrics.csv':38s}  ({len(cuda_long)} rows)\n")
 else:
-    print("  Nessun dato CUDA trovato.\n")
-
+    print("  Nessun dato CUDA trovato nei file specificati.")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SUMMARY
@@ -282,14 +332,21 @@ if not mpi_df.empty:
               f"{r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp_str}  {ef_str}  {comp}")
 
 # CUDA
-if not cuda_df.empty:
-    print("\n[CUDA] Baseline = best seq (mkl)")
-    print(f"  {'Test':<10} {'N':>6}  {'Time_s':>8}  {'GFLOPS':>8}  {'Speedup':>8}")
-    print(f"  {'-'*10} {'-'*6}  {'-'*8}  {'-'*8}  {'-'*8}")
-    for _, r in cuda_long.sort_values(["Test","N"]).iterrows():
-        sp = r["Speedup"]
-        sp_str = f"{sp:>8.2f}" if pd.notna(sp) else f"{'N/A':>8}"
-        print(f"  {r['Test']:<10} {int(r['N']):>6}  {r['Time_s']:>8.2f}  {r['GFLOPS']:>8.2f}  {sp_str}")
+print("\n" + "=" * 85)
+print(f"{'SUMMARY TABLE (CUDA)':^85}")
+print("=" * 85)
+
+if not cuda_combined.empty:
+    print(f"  {'N':>6} | {'Algorithm':<8} | {'Time_s':>8} | {'GFLOPS':>9} | {'Speedup':>7} | {'Configuration'}")
+    print("-" * 85)
+    
+    # Seleziona il migliore per ogni N/Algoritmo/Precisione
+    summary_cuda = cuda_combined.sort_values("Time_s").groupby(["N", "Algorithm", "Precision"]).first().reset_index()
+    
+    for _, r in summary_cuda.sort_values(["N", "Algorithm", "Precision"]).iterrows():
+        print(f"  {int(r['N']):>6} | {r['Algorithm']:<8} | {r['Time_s']:>8.3f} | {r['GFLOPS']:>9.2f} | {r['Speedup']:>7.2f} | {r['Configuration']}")
+
+print(f"\nFiles salvati in: {OUT_DIR}")
 
 print()
 print(f"Tutti i file CSV salvati nella cartella: {OUT_DIR}")

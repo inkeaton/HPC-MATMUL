@@ -1,5 +1,9 @@
-N,Test,Time_s,GFLOPS,Speedup
-4100,cublas,0.57,240.98,3.86
-8200,cublas,4.59,240.35,3.85
-12300,cublas,15.65,237.8,3.81
-16400,cublas,36.43,242.15,3.88
+N,Algorithm,Precision,BlockDim,TileSize,Time_s,Configuration,GFLOPS,Speedup
+4100,cuBLAS,Double,,,0.69,"Library, Double",200.64,3.22
+4100,cuBLAS,Float,,,0.06,"Library, Float",2506.22,40.18
+8200,cuBLAS,Double,,,4.57,"Library, Double",241.25,3.86
+8200,cuBLAS,Float,,,0.31,"Library, Float",3591.97,57.49
+12300,cuBLAS,Double,,,14.98,"Library, Double",248.36,3.98
+12300,cuBLAS,Float,,,0.88,"Library, Float",4253.41,68.1
+16400,cuBLAS,Double,,,35.14,"Library, Double",251.06,4.02
+16400,cuBLAS,Float,,,2.1,"Library, Float",4200.9,67.24
