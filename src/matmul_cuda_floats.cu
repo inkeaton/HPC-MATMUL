@@ -1,169 +1,173 @@
-/* * COMPILE OPTIONS:
- * nvcc -O3 -arch=sm_70 -std=c++17 matmul_cuda_floats.cu -o matmul_cuda_floats
- */
-
-#define n 5000
-#define TILE_WIDTH 32 // Block size (32x32 threads)
-
-#include <cuda_runtime.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cuda_runtime.h>
 
-/* error wrapper */
-static void cuda_check(cudaError_t err, const char *msg)
-{
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "%s failed: %s\n", msg, cudaGetErrorString(err));
-        exit(1);
-    }
+/* 1. CONFIGURATION FLAGS */
+
+#ifndef N
+    #define N 5000 
+#endif
+
+// Define independent dimensions for rectangular blocks
+#ifndef TILE_X
+    #define TILE_X 32 // Threads along the X axis (Columns of C)
+#endif
+
+#ifndef TILE_Y
+    #define TILE_Y 16 // Threads along the Y axis (Rows of C)
+#endif
+
+#ifndef TILE_K
+    #define TILE_K 16 // Inner dimension for the dot product tile
+#endif
+
+#ifdef RESTRICT
+    #define PTR_RESTRICT __restrict__
+#else
+    #define PTR_RESTRICT
+#endif
+
+#define cudaCheck(call) { \
+    cudaError_t err = call; \
+    if (err != cudaSuccess) { \
+        fprintf(stderr, "CUDA Error: %s (line %d)\n", cudaGetErrorString(err), __LINE__); \
+        exit(EXIT_FAILURE); \
+    } \
 }
 
-/* * Tiled Matrix Multiplication Kernel
- * Uses Shared Memory to reduce Global Memory access.
- */
-__global__ void matmul_tiled_kernel(const float *a, const float *b, float *c, int width)
-{
-    // Shared memory for the sub-blocks (tiles) of A and B
-    __shared__ float As[TILE_WIDTH][TILE_WIDTH];
-    __shared__ float Bs[TILE_WIDTH][TILE_WIDTH];
+/* 2. GPU SHARED MEMORY COMPUTATION KERNEL (FLOATS) */
+__global__ void matmul_kernel_shared(const float * PTR_RESTRICT a, 
+                                     const float * PTR_RESTRICT b, 
+                                     float * PTR_RESTRICT c, 
+                                     int n) {
+    // Allocate Shared Memory for the independent tile shapes
+    __shared__ float ds_A[TILE_Y][TILE_K];
+    __shared__ float ds_B[TILE_K][TILE_X];
 
-    // Row and Column index for the result element
-    int bx = blockIdx.x;
-    int by = blockIdx.y;
-    int tx = threadIdx.x;
-    int ty = threadIdx.y;
+    int bx = blockIdx.x;  int by = blockIdx.y;
+    int tx = threadIdx.x; int ty = threadIdx.y;
 
-    // Calculate global row and col indices
-    int row = by * TILE_WIDTH + ty;
-    int col = bx * TILE_WIDTH + tx;
+    // Identify the row and column of the C element to work on
+    int row = by * TILE_Y + ty;
+    int col = bx * TILE_X + tx;
 
-    float val = 0.0f;
+    // Flatten thread ID to handle non-square memory loading
+    int tid = ty * TILE_X + tx;
+    int num_threads = TILE_Y * TILE_X;
 
-    // Loop over the matrix tiles
-    // 'm' is the index of the tile (0, 1, 2... width/TILE_WIDTH)
-    for (int m = 0; m < (width + TILE_WIDTH - 1) / TILE_WIDTH; ++m)
-    {
+    float sum = 0.0f;
 
-        // 1. Load Data into Shared Memory
-        // Check bounds to handle matrices that aren't multiples of TILE_WIDTH
-        if (row < width && (m * TILE_WIDTH + tx) < width)
-            As[ty][tx] = a[row * width + (m * TILE_WIDTH + tx)];
-        else
-            As[ty][tx] = 0.0f;
-
-        if (col < width && (m * TILE_WIDTH + ty) < width)
-            Bs[ty][tx] = b[(m * TILE_WIDTH + ty) * width + col];
-        else
-            Bs[ty][tx] = 0.0f;
-
-        // 2. Synchronize to ensure the tile is loaded
-        __syncthreads();
-
-        // 3. Compute partial dot product using Shared Memory
-        for (int k = 0; k < TILE_WIDTH; ++k)
-        {
-            val += As[ty][k] * Bs[k][tx];
+    int numTiles = (n + TILE_K - 1) / TILE_K;
+    for (int p = 0; p < numTiles; ++p) {
+        
+        // 1D Cooperative load for A (Shape: TILE_Y x TILE_K)
+        for (int i = tid; i < TILE_Y * TILE_K; i += num_threads) {
+            int r = i / TILE_K;
+            int c_idx = i % TILE_K;
+            int global_row = by * TILE_Y + r;
+            int global_col = p * TILE_K + c_idx;
+            
+            if (global_row < n && global_col < n) {
+                ds_A[r][c_idx] = a[global_row * n + global_col];
+            } else {
+                ds_A[r][c_idx] = 0.0f;
+            }
         }
 
-        // 4. Synchronize before loading the next tile
+        // 1D Cooperative load for B (Shape: TILE_K x TILE_X)
+        for (int i = tid; i < TILE_K * TILE_X; i += num_threads) {
+            int r = i / TILE_X;
+            int c_idx = i % TILE_X;
+            int global_row = p * TILE_K + r;
+            int global_col = bx * TILE_X + c_idx;
+            
+            if (global_row < n && global_col < n) {
+                ds_B[r][c_idx] = b[global_row * n + global_col];
+            } else {
+                ds_B[r][c_idx] = 0.0f;
+            }
+        }
+
+        __syncthreads();
+
+        // Compute partial sum using the inner dimension TILE_K
+        for (int k = 0; k < TILE_K; ++k) {
+            sum += ds_A[ty][k] * ds_B[k][tx];
+        }
+
         __syncthreads();
     }
 
-    // Write result to global memory
-    if (row < width && col < width)
-    {
-        c[row * width + col] = val;
+    // Write the computed sum to global memory
+    if (row < n && col < n) {
+        c[row * n + col] = sum;
     }
 }
 
-int main(int argc, char **argv)
-{
-    // CHANGED: Using float instead of double
-    size_t bytes = sizeof(float) * n * n;
+int main() {
+    size_t bytes = N * N * sizeof(float);
 
-    /* Allocate and initialize host matrices. */
+    #ifdef TIME
+        cudaEvent_t start, stop;
+        cudaCheck(cudaEventCreate(&start));
+        cudaCheck(cudaEventCreate(&stop));
+    #endif
+
     float *h_a = (float *)malloc(bytes);
     float *h_b = (float *)malloc(bytes);
     float *h_c = (float *)malloc(bytes);
 
-    // Initialize
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < n; ++j)
-        {
-            h_a[i * n + j] = 2.0f;
-            h_b[i * n + j] = 3.0f;
-            h_c[i * n + j] = 0.0f;
-        }
+    // Initialize with float values
+    for (int i = 0; i < N * N; i++) {
+        h_a[i] = 2.0f;
+        h_b[i] = 3.0f;
+        h_c[i] = 0.0f;
+    }
 
-    /* Allocate device buffers */
-    float *d_a = nullptr;
-    float *d_b = nullptr;
-    float *d_c = nullptr;
-    cuda_check(cudaMalloc((void **)&d_a, bytes), "cudaMalloc a");
-    cuda_check(cudaMalloc((void **)&d_b, bytes), "cudaMalloc b");
-    cuda_check(cudaMalloc((void **)&d_c, bytes), "cudaMalloc c");
+    float *d_a, *d_b, *d_c;
+    cudaCheck(cudaMalloc(&d_a, bytes));
+    cudaCheck(cudaMalloc(&d_b, bytes));
+    cudaCheck(cudaMalloc(&d_c, bytes));
 
-    cuda_check(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice), "H2D a");
-    cuda_check(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice), "H2D b");
+    cudaCheck(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice));
+    cudaCheck(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
 
-    // Define dimensions
-    dim3 block(TILE_WIDTH, TILE_WIDTH);
-    dim3 grid((n + block.x - 1) / block.x, (n + block.y - 1) / block.y);
+    // Configure the Grid using the independent X and Y blocks
+    dim3 threadsPerBlock(TILE_X, TILE_Y);
+    dim3 blocksPerGrid((N + TILE_X - 1) / TILE_X, (N + TILE_Y - 1) / TILE_Y);
 
-    printf("Grid size: %d x %d\n", grid.x, grid.y);
-    printf("Block size: %d x %d\n", block.x, block.y);
+    #ifdef TIME
+        cudaCheck(cudaDeviceSynchronize()); 
+        cudaCheck(cudaEventRecord(start));
+    #endif
+
+    matmul_kernel_shared<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, N);
     
-    #ifdef ENABLE_TIMING
-        cudaEvent_t start, stop;
-        cuda_check(cudaEventCreate(&start), "event create start");
-        cuda_check(cudaEventCreate(&stop), "event create stop");
-        cuda_check(cudaEventRecord(start), "event record start");
+    #ifdef TIME
+        cudaCheck(cudaEventRecord(stop));
+        cudaCheck(cudaEventSynchronize(stop));
+
+        float milliseconds = 0;
+        cudaCheck(cudaEventElapsedTime(&milliseconds, start, stop));
+        double seconds = milliseconds / 1000.0;
+        
+        printf("[cuda-shared-float] N=%d, TILE_X=%d, TILE_Y=%d, TILE_K=%d | elapsed=%.3f s\n", 
+                N, TILE_X, TILE_Y, TILE_K, seconds); 
+                
+        cudaCheck(cudaEventDestroy(start));
+        cudaCheck(cudaEventDestroy(stop));
+    #else
+        cudaCheck(cudaDeviceSynchronize());
     #endif
 
-    /* Launch Tiled kernel */
-    matmul_tiled_kernel<<<grid, block>>>(d_a, d_b, d_c, n);
-    cuda_check(cudaGetLastError(), "kernel launch");
-
-    #ifdef ENABLE_TIMING
-        cuda_check(cudaEventRecord(stop), "event record stop");
-        cuda_check(cudaEventSynchronize(stop), "event sync stop");
-        float ms = 0.0f;
-        cuda_check(cudaEventElapsedTime(&ms, start, stop), "event elapsed");
-        fprintf(stderr, "[cuda-opt] n=%d elapsed=%.3f ms\n", n, ms);
-        cudaEventDestroy(start);
-        cudaEventDestroy(stop);
-    #endif
-
-    /* Copy result back to host. */
-    cuda_check(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost), "D2H c");
-
-    /* Dump a small block to file for inspection. */
-    FILE *f = fopen("mat-res.txt", "w");
-    if (!f)
-    {
-        perror("fopen");
-        return 1;
-    }
-
-    fprintf(f, "%d\n\n", n);
-    for (int i = 0; i < 1000; i++)
-    {
-        for (int j = 0; j < 1000; j++)
-        {
-            fprintf(f, "%.0f ", h_c[i * n + j]);
-        }
-        fprintf(f, "\n");
-    }
-
-    fclose(f);
-
-    /* Free resources */
+    cudaCheck(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
+    
     cudaFree(d_a);
     cudaFree(d_b);
     cudaFree(d_c);
     free(h_a);
     free(h_b);
     free(h_c);
+
     return 0;
 }

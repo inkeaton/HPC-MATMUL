@@ -1,0 +1,35 @@
+src/matmul_og.c:57:23: missed: couldn't vectorize loop
+src/matmul_og.c:61:13: missed: statement clobbers memory: fprintf (f_60, "%.0f ", _31);
+src/matmul_og.c:59:27: missed: couldn't vectorize loop
+src/matmul_og.c:61:13: missed: statement clobbers memory: fprintf (f_60, "%.0f ", _31);
+src/matmul_og.c:36:23: missed: couldn't vectorize loop
+src/matmul_og.c:36:23: missed: not vectorized: multiple nested loops.
+src/matmul_og.c:37:27: missed: couldn't vectorize loop
+src/matmul_og.c:39:32: missed: not vectorized: complicated access pattern.
+src/matmul_og.c:38:31: optimized: loop vectorized using 32 byte vectors
+src/matmul_og.c:38:31: optimized: loop vectorized using 16 byte vectors
+src/matmul_og.c:20:23: missed: couldn't vectorize loop
+src/matmul_og.c:24:21: missed: not vectorized: complicated access pattern.
+src/matmul_og.c:21:27: optimized: loop vectorized using 32 byte vectors
+src/matmul_og.c:20:23: missed: couldn't vectorize loop
+src/matmul_og.c:23:21: missed: not vectorized: complicated access pattern.
+src/matmul_og.c:21:27: optimized: loop vectorized using 32 byte vectors
+src/matmul_og.c:12:5: note: vectorized 3 loops in function.
+src/matmul_og.c:15:22: missed: statement clobbers memory: a_50 = malloc (134480000);
+src/matmul_og.c:16:22: missed: statement clobbers memory: b_52 = malloc (134480000);
+src/matmul_og.c:17:22: missed: statement clobbers memory: c_54 = malloc (134480000);
+src/matmul_og.c:25:21: missed: statement clobbers memory: __builtin_memset (c_54, 0, 134480000);
+src/matmul_og.c:31:3: missed: statement clobbers memory: clock_gettime (1, &start);
+src/matmul_og.c:43:3: missed: statement clobbers memory: clock_gettime (1, &end);
+src/matmul_og.c:45:3: missed: statement clobbers memory: fprintf (stderr.0_27, "[og-seq] n=%d elapsed=%.3f s\n", 4100, time_taken_57);
+src/matmul_og.c:49:15: missed: statement clobbers memory: f_60 = fopen ("mat-res.txt", "w");
+src/matmul_og.c:56:5: missed: statement clobbers memory: fprintf (f_60, "%d\n\n", 4100);
+src/matmul_og.c:61:13: missed: statement clobbers memory: fprintf (f_60, "%.0f ", _31);
+src/matmul_og.c:63:9: missed: statement clobbers memory: __builtin_fputc (10, f_60);
+src/matmul_og.c:66:5: missed: statement clobbers memory: fclose (f_60);
+src/matmul_og.c:69:5: missed: statement clobbers memory: free (a_50);
+src/matmul_og.c:70:5: missed: statement clobbers memory: free (b_52);
+src/matmul_og.c:71:5: missed: statement clobbers memory: free (c_54);
+src/matmul_og.c:52:9: missed: statement clobbers memory: perror ("fopen");
+src/matmul_og.c:12:5: note: ***** Analysis failed with vector mode V4DF
+src/matmul_og.c:12:5: note: ***** Skipping vector mode V32QI, which would repeat the analysis for V4DF

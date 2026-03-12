@@ -1,0 +1,142 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.10.0 Build 20230609_000000
+
+Compiler options: -g -O3 -xHost -qopt-report=max -DTIME -DALIGN -DRESTRICT -DN=4100 -DTILE_SIZE=64 -o bin/test
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main()) [1] src/matmul_seq_tile.c(58,12)
+  -> EXTERN: (71,21) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (72,21) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (73,21) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (76,13) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (77,13) free(void *)
+  -> EXTERN: (77,22) free(void *)
+  -> EXTERN: (77,31) free(void *)
+  -> EXTERN: (103,9) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (132,9) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (139,9) printf(const char *__restrict__, ...)
+  -> EXTERN: (144,5) free(void *)
+  -> EXTERN: (145,5) free(void *)
+  -> EXTERN: (146,5) free(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at src/matmul_seq_tile.c(93,5)
+<Peeled loop for vectorization>
+   remark #25015: Estimate of max trip count of loop=3
+LOOP END
+
+LOOP BEGIN at src/matmul_seq_tile.c(93,5)
+   remark #25420: Collapsed with loop at line 94 
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15451: unmasked unaligned unit stride stores: 2 
+   remark #15467: unmasked aligned streaming stores: 1 
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 9 
+   remark #15477: vector cost: 3.250 
+   remark #15478: estimated potential speedup: 2.760 
+   remark #15488: --- end vector cost summary ---
+   remark #25015: Estimate of max trip count of loop=4202500
+
+   LOOP BEGIN at src/matmul_seq_tile.c(94,9)
+      remark #25421: Loop eliminated in Collapsing 
+
+   LOOP END
+LOOP END
+
+LOOP BEGIN at src/matmul_seq_tile.c(93,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at src/matmul_seq_tile.c(107,5)
+   remark #25101: Loop Interchange not done due to: Original Order seems proper
+   remark #25452: Original Order found to be proper, but by a close margin
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at src/matmul_seq_tile.c(108,9)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at src/matmul_seq_tile.c(109,13)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at src/matmul_seq_tile.c(112,17)
+            remark #15542: loop was not vectorized: inner loop was already vectorized
+
+            LOOP BEGIN at src/matmul_seq_tile.c(113,21)
+               remark #15542: loop was not vectorized: inner loop was already vectorized
+
+               LOOP BEGIN at src/matmul_seq_tile.c(120,25)
+                  remark #15300: LOOP WAS VECTORIZED
+                  remark #15448: unmasked aligned unit stride loads: 2 
+                  remark #15449: unmasked aligned unit stride stores: 1 
+                  remark #15475: --- begin vector cost summary ---
+                  remark #15476: scalar cost: 8 
+                  remark #15477: vector cost: 1.750 
+                  remark #15478: estimated potential speedup: 4.570 
+                  remark #15488: --- end vector cost summary ---
+                  remark #25015: Estimate of max trip count of loop=1025
+               LOOP END
+
+               LOOP BEGIN at src/matmul_seq_tile.c(120,25)
+               <Remainder loop for vectorization>
+                  remark #25015: Estimate of max trip count of loop=4100
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+src/matmul_seq_tile.c(58,12):remark #34051: REGISTER ALLOCATION : [main] src/matmul_seq_tile.c:58
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   21[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm6]
+        
+    Routine temporaries
+        Total         :     155
+            Global    :      65
+            Local     :      90
+        Regenerable   :      42
+        Spilled       :      29
+        
+    Routine stack
+        Variables     :      60 bytes*
+            Reads     :      18 [1.75e-06 ~ 0.0%]
+            Writes    :       5 [5.72e-07 ~ 0.0%]
+        Spills        :     216 bytes*
+            Reads     :      36 [1.91e+00 ~ 1.9%]
+            Writes    :      27 [4.42e-01 ~ 0.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================

@@ -74,7 +74,7 @@ int main() {
     #endif
     
     /* 7. CORE COMPUTATION (i-k-j) */
-    #pragma omp parallel for schedule(guided, 8)
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < N; ++i) {
         for (int k = 0; k < N; k++) {
             double r = a[i][k];

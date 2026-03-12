@@ -1,0 +1,46 @@
+Global optimization report for : main
+
+LOOP BEGIN at src/matmul_mkl.c (59, 9)
+    remark #25567: 2 loops have been collapsed
+    remark #15344: Loop was not vectorized: vector dependence prevents vectorization
+    remark #15346: vector dependence: assumed OUTPUT dependence between b (61:21) and a (60:21) 
+    remark #15346: vector dependence: assumed OUTPUT dependence between c (62:21) and a (60:21) 
+    remark #15346: vector dependence: assumed OUTPUT dependence between c (62:21) and b (61:21) 
+    remark #25438: Loop unrolled without remainder by 4
+LOOP END
+=================================================================
+
+---- Begin Inlining Report ----
+Option Values:
+  inline-threshold: 225
+  inlinehint-threshold: 325
+  inlinecold-threshold: 45
+  inlineoptsize-threshold: 15
+
+DEAD STATIC FUNC: fprintf
+
+COMPILE FUNC: main
+   -> EXTERN: posix_memalign src/matmul_mkl.c (43,17)
+   -> EXTERN: posix_memalign src/matmul_mkl.c (44,17)
+   -> EXTERN: posix_memalign src/matmul_mkl.c (45,17)
+   -> DELETE: fprintf src/matmul_mkl.c (48,13)
+   -> EXTERN: clock_gettime src/matmul_mkl.c (68,9)
+   -> EXTERN: cblas_dgemm src/matmul_mkl.c (73,5)
+   -> EXTERN: clock_gettime src/matmul_mkl.c (85,9)
+   -> EXTERN: printf src/matmul_mkl.c (89,9)
+   -> EXTERN: free src/matmul_mkl.c (94,5)
+   -> EXTERN: free src/matmul_mkl.c (95,5)
+   -> EXTERN: free src/matmul_mkl.c (96,5)
+   -> DELETE: rand src/matmul_mkl.c (60,31)
+   -> DELETE: rand src/matmul_mkl.c (61,32)
+   -> EXTERN: fwrite src/matmul_mkl.c (48,13)
+   -> EXTERN: rand src/matmul_mkl.c (60,31)
+   -> EXTERN: rand src/matmul_mkl.c (61,32)
+   -> EXTERN: rand src/matmul_mkl.c (60,31)
+   -> EXTERN: rand src/matmul_mkl.c (61,32)
+   -> EXTERN: rand src/matmul_mkl.c (60,31)
+   -> EXTERN: rand src/matmul_mkl.c (61,32)
+   -> EXTERN: rand src/matmul_mkl.c (60,31)
+   -> EXTERN: rand src/matmul_mkl.c (61,32)
+
+---- End Inlining Report ------

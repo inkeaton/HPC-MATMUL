@@ -8,20 +8,25 @@
     #define N 5000 
 #endif
 
-// Warning: TILE_SIZE must be <= 32 for CUDA (32x32 = 1024 max threads per block)
-// Tesla T4 has 64KB Shared Memory per SM. 32x32 doubles = 8KB per tile.
-#ifndef TILE_SIZE
-    #define TILE_SIZE 32 
+// Define independent dimensions for rectangular blocks
+#ifndef TILE_X
+    #define TILE_X 32 // Threads along the X axis (Columns of C)
 #endif
 
-// CUDA uses __restrict__ natively
+#ifndef TILE_Y
+    #define TILE_Y 16 // Threads along the Y axis (Rows of C)
+#endif
+
+#ifndef TILE_K
+    #define TILE_K 16 // Inner dimension for the dot product tile
+#endif
+
 #ifdef RESTRICT
     #define PTR_RESTRICT __restrict__
 #else
     #define PTR_RESTRICT
 #endif
 
-// Helper macro to catch CUDA errors instantly
 #define cudaCheck(call) { \
     cudaError_t err = call; \
     if (err != cudaSuccess) { \
@@ -35,46 +40,61 @@ __global__ void matmul_kernel_shared(const double * PTR_RESTRICT a,
                                      const double * PTR_RESTRICT b, 
                                      double * PTR_RESTRICT c, 
                                      int n) {
-    // Allocate Shared Memory for the tiles
-    __shared__ double ds_A[TILE_SIZE][TILE_SIZE];
-    __shared__ double ds_B[TILE_SIZE][TILE_SIZE];
+    // Allocate Shared Memory for the independent tile shapes
+    __shared__ double ds_A[TILE_Y][TILE_K];
+    __shared__ double ds_B[TILE_K][TILE_X];
 
     int bx = blockIdx.x;  int by = blockIdx.y;
     int tx = threadIdx.x; int ty = threadIdx.y;
 
     // Identify the row and column of the C element to work on
-    int row = by * TILE_SIZE + ty;
-    int col = bx * TILE_SIZE + tx;
+    int row = by * TILE_Y + ty;
+    int col = bx * TILE_X + tx;
+
+    // Flatten thread ID to handle non-square memory loading
+    int tid = ty * TILE_X + tx;
+    int num_threads = TILE_Y * TILE_X;
 
     double sum = 0.0;
 
-    // Loop over the tiles of the input matrices required to compute the C element
-    int numTiles = (n + TILE_SIZE - 1) / TILE_SIZE;
+    int numTiles = (n + TILE_K - 1) / TILE_K;
     for (int p = 0; p < numTiles; ++p) {
         
-        // Collaborative loading of A and B tiles into shared memory
-        // We include boundary checks in case N is not perfectly divisible by TILE_SIZE
-        if (row < n && p * TILE_SIZE + tx < n) {
-            ds_A[ty][tx] = a[row * n + (p * TILE_SIZE + tx)];
-        } else {
-            ds_A[ty][tx] = 0.0;
+        // 1D Cooperative load for A (Shape: TILE_Y * TILE_K)
+        for (int i = tid; i < TILE_Y * TILE_K; i += num_threads) {
+            int r = i / TILE_K;
+            int c_idx = i % TILE_K;
+            int global_row = by * TILE_Y + r;
+            int global_col = p * TILE_K + c_idx;
+            
+            if (global_row < n && global_col < n) {
+                ds_A[r][c_idx] = a[global_row * n + global_col];
+            } else {
+                ds_A[r][c_idx] = 0.0;
+            }
         }
 
-        if (p * TILE_SIZE + ty < n && col < n) {
-            ds_B[ty][tx] = b[(p * TILE_SIZE + ty) * n + col];
-        } else {
-            ds_B[ty][tx] = 0.0;
+        // 1D Cooperative load for B (Shape: TILE_K * TILE_X)
+        for (int i = tid; i < TILE_K * TILE_X; i += num_threads) {
+            int r = i / TILE_X;
+            int c_idx = i % TILE_X;
+            int global_row = p * TILE_K + r;
+            int global_col = bx * TILE_X + c_idx;
+            
+            if (global_row < n && global_col < n) {
+                ds_B[r][c_idx] = b[global_row * n + global_col];
+            } else {
+                ds_B[r][c_idx] = 0.0;
+            }
         }
 
-        // Wait for all threads to finish loading the tile
         __syncthreads();
 
-        // Compute partial sum for the current tile
-        for (int k = 0; k < TILE_SIZE; ++k) {
+        // Compute partial sum using the inner dimension TILE_K
+        for (int k = 0; k < TILE_K; ++k) {
             sum += ds_A[ty][k] * ds_B[k][tx];
         }
 
-        // Wait for all threads to finish using the tile before loading the next one
         __syncthreads();
     }
 
@@ -87,38 +107,22 @@ __global__ void matmul_kernel_shared(const double * PTR_RESTRICT a,
 int main() {
     size_t bytes = N * N * sizeof(double);
 
-    /* 3. TIMING SETUP (Using accurate CUDA Events) */
     #ifdef TIME
         cudaEvent_t start, stop;
         cudaCheck(cudaEventCreate(&start));
         cudaCheck(cudaEventCreate(&stop));
     #endif
 
-    /* 4. HOST POINTERS & ALLOCATION */
-    double *h_a, *h_b, *h_c;
+    double *h_a = (double *)malloc(bytes);
+    double *h_b = (double *)malloc(bytes);
+    double *h_c = (double *)malloc(bytes);
 
-    #ifdef ALIGN
-        int err_a = posix_memalign((void **)&h_a, 64, bytes);
-        int err_b = posix_memalign((void **)&h_b, 64, bytes);
-        int err_c = posix_memalign((void **)&h_c, 64, bytes);
-        if (err_a != 0 || err_b != 0 || err_c != 0) {
-            fprintf(stderr, "Aligned memory allocation failed.\n");
-            return 1;
-        }
-    #else
-        h_a = (double *)malloc(bytes);
-        h_b = (double *)malloc(bytes);
-        h_c = (double *)malloc(bytes);
-    #endif
-
-    /* 5. INITIALIZATION (On Host) */
     for (int i = 0; i < N * N; i++) {
-        h_a[i] = (double)rand() / RAND_MAX;
-        h_b[i] = ((double)rand() / RAND_MAX) * 10.0;
+        h_a[i] = 2.0;
+        h_b[i] = 3.0;
         h_c[i] = 0.0;
     }
 
-    /* 6. DEVICE POINTERS & ALLOCATION */
     double *d_a, *d_b, *d_c;
     cudaCheck(cudaMalloc(&d_a, bytes));
     cudaCheck(cudaMalloc(&d_b, bytes));
@@ -127,40 +131,34 @@ int main() {
     cudaCheck(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice));
     cudaCheck(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
 
-    /* 7. CONFIGURE CUDA GRID */
-    dim3 threadsPerBlock(TILE_SIZE, TILE_SIZE);
-    dim3 blocksPerGrid((N + TILE_SIZE - 1) / TILE_SIZE, (N + TILE_SIZE - 1) / TILE_SIZE);
+    // Configure the Grid using the independent X and Y blocks
+    dim3 threadsPerBlock(TILE_X, TILE_Y);
+    dim3 blocksPerGrid((N + TILE_X - 1) / TILE_X, (N + TILE_Y - 1) / TILE_Y);
 
-    /* 8. START TIMER */
     #ifdef TIME
         cudaCheck(cudaDeviceSynchronize()); 
         cudaCheck(cudaEventRecord(start));
     #endif
 
-    /* 9. LAUNCH SHARED MEMORY KERNEL */
     matmul_kernel_shared<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, N);
     
     #ifdef TIME
         cudaCheck(cudaEventRecord(stop));
         cudaCheck(cudaEventSynchronize(stop));
 
-        /* 10. STOP TIMER & REPORT */
         float milliseconds = 0;
         cudaCheck(cudaEventElapsedTime(&milliseconds, start, stop));
         double seconds = milliseconds / 1000.0;
         
-        // Formatted so our benchmark.sh script perfectly captures 'elapsed=X.XXX s'
-        printf("[cuda-shared] N=%d, TILE_SIZE=%d | elapsed=%.3f s\n", 
-                N, TILE_SIZE, seconds); 
+        printf("[cuda-shared] N=%d, TILE_X=%d, TILE_Y=%d, TILE_K=%d | elapsed=%.3f s\n", 
+                N, TILE_X, TILE_Y, TILE_K, seconds); 
                 
         cudaCheck(cudaEventDestroy(start));
         cudaCheck(cudaEventDestroy(stop));
     #else
-        // If not timing, still sync to catch async execution errors
         cudaCheck(cudaDeviceSynchronize());
     #endif
 
-    /* 11. CLEANUP */
     cudaCheck(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
     
     cudaFree(d_a);

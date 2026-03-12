@@ -1,0 +1,84 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.10.0 Build 20230609_000000
+
+Compiler options: -g -O3 -xHost -qopt-report=max -qmkl=sequential -DTIME -DALIGN -DRESTRICT -DN=4100 -o bin/test
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main()) [1] src/matmul_mkl.c(29,12)
+  -> EXTERN: (43,17) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (44,17) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (45,17) posix_memalign(void **, size_t, size_t)
+  -> EXTERN: (48,13) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (60,31) rand(void)
+  -> EXTERN: (61,32) rand(void)
+  -> EXTERN: (68,9) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (73,5) cblas_dgemm(const CBLAS_LAYOUT, const CBLAS_TRANSPOSE, const CBLAS_TRANSPOSE, const int, const int, const int, const double, const double *, const int, const double *, const int, const double, double *, const int)
+  -> EXTERN: (85,9) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (89,9) printf(const char *__restrict__, ...)
+  -> EXTERN: (94,5) free(void *)
+  -> EXTERN: (95,5) free(void *)
+  -> EXTERN: (96,5) free(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at src/matmul_mkl.c(58,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:rand(void) (60:31) and call:rand(void) (61:32)
+
+   LOOP BEGIN at src/matmul_mkl.c(59,9)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed OUTPUT dependence between call:rand(void) (60:31) and call:rand(void) (61:32)
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+src/matmul_mkl.c(29,12):remark #34051: REGISTER ALLOCATION : [main] src/matmul_mkl.c:29
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   15[ rax rdx rcx rbx rsi rdi r8-r9 r12-r15 zmm0-zmm2]
+        
+    Routine temporaries
+        Total         :      91
+            Global    :      28
+            Local     :      63
+        Regenerable   :      42
+        Spilled       :      10
+        
+    Routine stack
+        Variables     :      60 bytes*
+            Reads     :      15 [5.03e-06 ~ 0.0%]
+            Writes    :       5 [1.83e-06 ~ 0.0%]
+        Spills        :      64 bytes*
+            Reads     :       8 [6.77e-03 ~ 0.0%]
+            Writes    :       8 [6.78e-03 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================

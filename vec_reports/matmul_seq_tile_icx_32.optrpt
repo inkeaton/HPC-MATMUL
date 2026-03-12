@@ -1,0 +1,175 @@
+Global optimization report for : main
+
+LOOP BEGIN at src/matmul_seq_tile.c (94, 9)
+    remark #25567: 2 loops have been collapsed
+    remark #25408: memset generated
+    remark #15300: LOOP WAS VECTORIZED
+    remark #15305: vectorization support: vector length 4
+    remark #15475: --- begin vector loop cost summary ---
+    remark #15476: scalar cost: 4.000000 
+    remark #15477: vector cost: 1.937500 
+    remark #15478: estimated potential speedup: 2.062500 
+    remark #15309: vectorization support: normalized vectorization overhead 0.000000
+    remark #15570: using scalar loop trip count: 16810000
+    remark #15482: vectorized math library calls: 0 
+    remark #15484: vector function calls: 0 
+    remark #15485: serialized function calls: 0
+    remark #15488: --- end vector loop cost summary ---
+    remark #15447: --- begin vector loop memory reference summary ---
+    remark #15450: unmasked unaligned unit stride loads: 0 
+    remark #15451: unmasked unaligned unit stride stores: 2 
+    remark #15456: masked unaligned unit stride loads: 0 
+    remark #15457: masked unaligned unit stride stores: 0 
+    remark #15458: masked indexed (or gather) loads: 0 
+    remark #15459: masked indexed (or scatter) stores: 0 
+    remark #15462: unmasked indexed (or gather) loads: 0 
+    remark #15463: unmasked indexed (or scatter) stores: 0 
+    remark #15554: Unmasked VLS-optimized loads (each part of the group counted separately): 0
+    remark #15555: Masked VLS-optimized loads (each part of the group counted separately): 0
+    remark #15556: Unmasked VLS-optimized stores (each part of the group counted separately): 0
+    remark #15557: Masked VLS-optimized stores (each part of the group counted separately): 0
+    remark #15497: vector compress: 0 
+    remark #15498: vector expand: 0 
+    remark #15474: --- end vector loop memory reference summary ---
+LOOP END
+
+LOOP BEGIN at src/matmul_seq_tile.c (107, 5)
+    remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+    LOOP BEGIN at src/matmul_seq_tile.c (108, 9)
+        remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+        LOOP BEGIN at src/matmul_seq_tile.c (109, 13)
+        <Predicate Optimized v1>
+            remark #25423: Invariant If condition at line 113 hoisted out of this loop
+            remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+            LOOP BEGIN at src/matmul_seq_tile.c (112, 17)
+                remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+                LOOP BEGIN at src/matmul_seq_tile.c (113, 21)
+                    remark #25540: Loop unrolled and jammed by 8
+                    remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+                    LOOP BEGIN at src/matmul_seq_tile.c (120, 25)
+                        remark #15300: LOOP WAS VECTORIZED
+                        remark #15305: vectorization support: vector length 4
+                        remark #15475: --- begin vector loop cost summary ---
+                        remark #15476: scalar cost: 43.000000 
+                        remark #15477: vector cost: 13.000000 
+                        remark #15478: estimated potential speedup: 3.218750 
+                        remark #15309: vectorization support: normalized vectorization overhead 0.140625
+                        remark #15482: vectorized math library calls: 0 
+                        remark #15484: vector function calls: 0 
+                        remark #15485: serialized function calls: 0
+                        remark #15488: --- end vector loop cost summary ---
+                        remark #15447: --- begin vector loop memory reference summary ---
+                        remark #15450: unmasked unaligned unit stride loads: 16 
+                        remark #15451: unmasked unaligned unit stride stores: 8 
+                        remark #15456: masked unaligned unit stride loads: 0 
+                        remark #15457: masked unaligned unit stride stores: 0 
+                        remark #15458: masked indexed (or gather) loads: 0 
+                        remark #15459: masked indexed (or scatter) stores: 0 
+                        remark #15462: unmasked indexed (or gather) loads: 0 
+                        remark #15463: unmasked indexed (or scatter) stores: 0 
+                        remark #15554: Unmasked VLS-optimized loads (each part of the group counted separately): 0
+                        remark #15555: Masked VLS-optimized loads (each part of the group counted separately): 0
+                        remark #15556: Unmasked VLS-optimized stores (each part of the group counted separately): 0
+                        remark #15557: Masked VLS-optimized stores (each part of the group counted separately): 0
+                        remark #15497: vector compress: 0 
+                        remark #15498: vector expand: 0 
+                        remark #15474: --- end vector loop memory reference summary ---
+                        remark #25583: Number of Array Refs Scalar Replaced In Loop: 14
+                    LOOP END
+
+                    LOOP BEGIN at src/matmul_seq_tile.c (120, 25)
+                    <Remainder loop for vectorization>
+                        remark #25583: Number of Array Refs Scalar Replaced In Loop: 14
+                    LOOP END
+                LOOP END
+
+                LOOP BEGIN at src/matmul_seq_tile.c (113, 21)
+                <Remainder loop>
+                    remark #15553: loop was not vectorized: outer loop is not an auto-vectorization candidate.
+
+                    LOOP BEGIN at src/matmul_seq_tile.c (120, 25)
+                        remark #15300: LOOP WAS VECTORIZED
+                        remark #15305: vectorization support: vector length 4
+                        remark #15475: --- begin vector loop cost summary ---
+                        remark #15476: scalar cost: 8.000000 
+                        remark #15477: vector cost: 2.937500 
+                        remark #15478: estimated potential speedup: 2.656250 
+                        remark #15309: vectorization support: normalized vectorization overhead 0.671875
+                        remark #15482: vectorized math library calls: 0 
+                        remark #15484: vector function calls: 0 
+                        remark #15485: serialized function calls: 0
+                        remark #15488: --- end vector loop cost summary ---
+                        remark #15447: --- begin vector loop memory reference summary ---
+                        remark #15450: unmasked unaligned unit stride loads: 2 
+                        remark #15451: unmasked unaligned unit stride stores: 1 
+                        remark #15456: masked unaligned unit stride loads: 0 
+                        remark #15457: masked unaligned unit stride stores: 0 
+                        remark #15458: masked indexed (or gather) loads: 0 
+                        remark #15459: masked indexed (or scatter) stores: 0 
+                        remark #15462: unmasked indexed (or gather) loads: 0 
+                        remark #15463: unmasked indexed (or scatter) stores: 0 
+                        remark #15554: Unmasked VLS-optimized loads (each part of the group counted separately): 0
+                        remark #15555: Masked VLS-optimized loads (each part of the group counted separately): 0
+                        remark #15556: Unmasked VLS-optimized stores (each part of the group counted separately): 0
+                        remark #15557: Masked VLS-optimized stores (each part of the group counted separately): 0
+                        remark #15497: vector compress: 0 
+                        remark #15498: vector expand: 0 
+                        remark #15474: --- end vector loop memory reference summary ---
+                    LOOP END
+
+                    LOOP BEGIN at src/matmul_seq_tile.c (120, 25)
+                    <Remainder loop for vectorization>
+                    LOOP END
+                LOOP END
+            LOOP END
+        LOOP END
+
+        LOOP BEGIN at src/matmul_seq_tile.c (109, 13)
+        <Predicate Optimized v2>
+
+            LOOP BEGIN at src/matmul_seq_tile.c (112, 17)
+            LOOP END
+        LOOP END
+    LOOP END
+LOOP END
+=================================================================
+
+---- Begin Inlining Report ----
+Option Values:
+  inline-threshold: 225
+  inlinehint-threshold: 325
+  inlinecold-threshold: 45
+  inlineoptsize-threshold: 15
+
+DEAD STATIC FUNC: fprintf
+
+COMPILE FUNC: main
+   -> EXTERN: posix_memalign src/matmul_seq_tile.c (71,21)
+   -> EXTERN: posix_memalign src/matmul_seq_tile.c (72,21)
+   -> EXTERN: posix_memalign src/matmul_seq_tile.c (73,21)
+   -> DELETE: fprintf src/matmul_seq_tile.c (76,13)
+   -> EXTERN: free src/matmul_seq_tile.c (77,13)
+   -> EXTERN: free src/matmul_seq_tile.c (77,22)
+   -> DELETE: free src/matmul_seq_tile.c (77,31)
+   -> EXTERN: clock_gettime src/matmul_seq_tile.c (103,9)
+   -> EXTERN: clock_gettime src/matmul_seq_tile.c (132,9)
+   -> EXTERN: printf src/matmul_seq_tile.c (139,9)
+   -> EXTERN: free src/matmul_seq_tile.c (144,5)
+   -> EXTERN: free src/matmul_seq_tile.c (145,5)
+   -> EXTERN: free src/matmul_seq_tile.c (146,5)
+   -> EXTERN: fwrite src/matmul_seq_tile.c (76,13)
+   -> llvm.memset.p0.i64 src/matmul_seq_tile.c (97,13)
+   -> EXTERN: __libirc_nontemporal_store src/matmul_seq_tile.c (95,21)
+   -> EXTERN: __libirc_nontemporal_store src/matmul_seq_tile.c (96,21)
+   -> EXTERN: __libirc_nontemporal_store src/matmul_seq_tile.c (75,24)
+   -> EXTERN: __libirc_nontemporal_store src/matmul_seq_tile.c (75,24)
+   -> llvm.x86.sse.sfence src/matmul_seq_tile.c (75,24)
+   -> llvm.masked.gather.v8f64.v8p0 src/matmul_seq_tile.c (121,44)
+   -> llvm.vector.reduce.fadd.v8f64 src/matmul_seq_tile.c (121,37)
+
+---- End Inlining Report ------
