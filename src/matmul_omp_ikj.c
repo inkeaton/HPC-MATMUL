@@ -57,7 +57,6 @@ int main() {
     #endif
 
     /* 5. INITIALIZATION */
-    // Using OpenMP here speeds up the allocation of huge matrices
     #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -87,7 +86,7 @@ int main() {
         /* 8. STOP TIMER & REPORT */
     #ifdef TIME
         end_time = omp_get_wtime();
-        double time_taken = end_time - start_time; // Simple subtraction
+        double time_taken = end_time - start_time; 
       
         int nthreads = 1;
         #pragma omp parallel

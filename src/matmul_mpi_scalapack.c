@@ -106,8 +106,8 @@ int main(int argc, char *argv[]) {
 
     // Initialization
     for (size_t i = 0; i < local_elements; i++) {
-        local_A[i] = (double)rand() / RAND_MAX;
-        local_B[i] = ((double)rand() / RAND_MAX) * 10.0;
+        local_A[i] = 2.0;
+        local_B[i] = 3.0;
         local_C[i] = 0.0;
     }
 

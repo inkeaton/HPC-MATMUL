@@ -1,23 +1,3 @@
-/* * ======================================================================================
- * OPTIMIZED PARALLEL MATRIX MULTIPLICATION (OPENMP)
- * ======================================================================================
- */
-
-/* 
- * PADDING FOR VECTORIZATION
- * -------------------------
- * N_PAD rounds N up to the nearest multiple of 16 (= 4*4).
- * This guarantees:
- *   1. Every row starts on a 128-byte boundary (16 doubles × 8 bytes),
- *      which is a multiple of a cache line and an AVX-512 register width.
- *   2. The inner-most j-loop length is always a multiple of the SIMD width,
- *      so the compiler never emits scalar "clean-up" tail code.
- *
- * For N = 5000:  N_PAD = 5008  (5000 is not divisible by 16; 5008 is).
- * For N = 4096:  N_PAD = 4096  (already a power-of-two multiple of 16, no change).
- */
-// The alignment step needed to satisfy both the 64-element cache block 
-// and the compiler's 4-way loop unrolling (64 * 4 = 256).
 /* 1. CONFIGURATION FLAGS */
 
 // Default matrix size if not specified at compile time

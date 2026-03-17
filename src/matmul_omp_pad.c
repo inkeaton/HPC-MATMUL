@@ -1,21 +1,3 @@
-/* * ======================================================================================
- * OPTIMIZED PARALLEL MATRIX MULTIPLICATION (OPENMP)
- * ======================================================================================
- */
-/* 
- * PADDING FOR VECTORIZATION
- * -------------------------
- * N_PAD rounds N up to the nearest multiple of 16 (= 4*4).
- * This guarantees:
- *   1. Every row starts on a 128-byte boundary (16 doubles × 8 bytes),
- *      which is a multiple of a cache line and an AVX-512 register width.
- *   2. The inner-most j-loop length is always a multiple of the SIMD width,
- *      so the compiler never emits scalar "clean-up" tail code.
- *
- * For N = 5000:  N_PAD = 5008  (5000 is not divisible by 16; 5008 is).
- * For N = 4096:  N_PAD = 4096  (already a power-of-two multiple of 16, no change).
- */
-
 #ifndef N
     #define N 5000 
 #endif
@@ -44,7 +26,6 @@ int main() {
     #endif
 
     /* 3. POINTER DECLARATION WITH OPTIONAL RESTRICT */
-    // Note: Pointers are sized to N_PAD, not N
     double (* PTR_RESTRICT a)[N_PAD] = NULL;
     double (* PTR_RESTRICT b)[N_PAD] = NULL;
     double (* PTR_RESTRICT c)[N_PAD] = NULL;
@@ -114,9 +95,7 @@ int main() {
     #ifdef TIME
         clock_gettime(CLOCK_MONOTONIC, &end);
         double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-        
-        // Calculate GFLOPS based on the *useful* algorithmic operations (N), not N_PAD.
-        // This provides an apples-to-apples comparison with the unpadded version.
+
         double total_flops = 2.0 * (double)N * (double)N * (double)N;
         double gflops = total_flops / (time_taken * 1e9);
         

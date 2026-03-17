@@ -37,7 +37,7 @@
 int main() {
     size_t bytes = N * N * sizeof(double);
 
-    /* 2. TIMING SETUP (Using accurate CUDA Events) */
+    /* 2. TIMING SETUP */
     #ifdef TIME
         cudaEvent_t start, stop;
         cudaCheck(cudaEventCreate(&start));
@@ -63,9 +63,9 @@ int main() {
 
     /* 4. INITIALIZATION (On Host) */
     for (int i = 0; i < N * N; i++) {
-        h_a[i] = (double)rand() / RAND_MAX;
-        h_b[i] = ((double)rand() / RAND_MAX) * 10.0;
-        h_c[i] = 0.0; // Automatically overwritten by cuBLAS since beta = 0.0
+        h_a[i] = 2.0;
+        h_b[i] = 3.0;
+        h_c[i] = 0.0; 
     }
 
     /* 5. DEVICE POINTERS & ALLOCATION */
@@ -91,8 +91,6 @@ int main() {
     #endif
 
     /* 8. LAUNCH CUBLAS DGEMM */
-    // Note: To handle C's Row-Major layout in Column-Major cuBLAS, 
-    // we compute C = B * A instead of C = A * B.
     cublasCheck(cublasDgemm(handle, 
                             CUBLAS_OP_N, CUBLAS_OP_N, 
                             N, N, N, 
@@ -111,7 +109,6 @@ int main() {
         cudaCheck(cudaEventElapsedTime(&milliseconds, start, stop));
         double seconds = milliseconds / 1000.0;
         
-        // Formatted for seamless benchmark.sh extraction
         printf("[cublas-dgemm] N=%d | elapsed=%.3f s\n", 
                 N, seconds);
             

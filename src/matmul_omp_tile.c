@@ -1,45 +1,3 @@
-/* * ======================================================================================
- * OPTIMIZED PARALLEL MATRIX MULTIPLICATION (OPENMP)
- * ======================================================================================
- * * COMPILATION INSTRUCTIONS:
- * -------------------------
- * * MACHINE 1: INTEL i9-12900K ("Machine 210") - Hybrid Architecture
- * Compiler: Intel oneAPI (icx) is recommended for best hybrid scheduling.
- * Command: 
- * icx -O3 -xHost -qopenmp -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
- * Alternative (GCC):
- * gcc -O3 -march=native -fopenmp -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
- *
- * * MACHINE 2: AMD RYZEN 9 7900X ("Machine AMD") - Zen 4 Architecture
- * Compiler: GCC is highly effective here.
- * Command:
- * gcc -O3 -march=native -fopenmp -mprefer-vector-width=512 -funroll-loops -DENABLE_TIMING matmul_opt_omp.c -o matmul_omp
- *
- * * EXECUTION & TUNING (ENVIRONMENT VARIABLES):
- * ---------------------------------------------
- * * MACHINE 1 (Intel Hybrid):
- * We need to balance load across fast P-cores and slow E-cores.
- * Use 'spread' to use all cores, but 'guided' schedule (in code) handles the speed difference.
- * export OMP_NUM_THREADS=24   (Use all logical threads)
- * export OMP_PLACES=cores
- * export OMP_PROC_BIND=spread
- * ./matmul_omp
- *
- * * MACHINE 2 (AMD Chiplet):
- * We want to spread threads across both CCX dies to maximize memory bandwidth.
- * export OMP_NUM_THREADS=24
- * export OMP_PLACES=threads
- * export OMP_PROC_BIND=spread
- * ./matmul_omp
- * ---------------------------------------------
- * * TESTING TO DO:
- * - Compare performance with different number of threads (e.g., 8,16,24).
- * - Compare performance with different scheduling strategies (static, dynamic, guided).
- * - Compare performance with different scheduling chunk sizes (e.g., 1, 8, 32).
- * - Compare performance without first-touch initialization.
- * * ======================================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -102,7 +60,6 @@ int main() {
     #endif
 
     /* 5. INITIALIZATION */
-    // Using OpenMP here speeds up the allocation of huge matrices
     #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -118,8 +75,7 @@ int main() {
     #endif
 
     /* 7. CORE COMPUTATION (Multithreaded Tiled i-k-j) */
-    // collapse(2) merges the outer two tile loops so OpenMP can distribute 
-    // a larger pool of distinct chunks perfectly across your CPU cores.
+    // collapse(2) merges the outer two tile loops
     #pragma omp parallel for collapse(2) schedule(static)
     for (int i0 = 0; i0 < N; i0 += TILE_SIZE) {
         for (int k0 = 0; k0 < N; k0 += TILE_SIZE) {

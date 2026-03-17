@@ -16,7 +16,7 @@
 /* 1. CONFIGURATION FLAGS */
 
 #ifndef N
-#define N 1000 
+    #define N 1000 
 #endif
 
 // Handle the restrict keyword macro
@@ -38,11 +38,10 @@ int main() {
     double (* PTR_RESTRICT c)[N] = NULL;
 
    /* 4. MEMORY ALLOCATION (ALIGNED VS STANDARD) */
-#ifdef ALIGN
-    // MKL absolutely loves 64-byte aligned memory for AVX instructions
-    int err_a = posix_memalign((void **)&a, 64, sizeof(double[N][N]));
-    int err_b = posix_memalign((void **)&b, 64, sizeof(double[N][N]));
-    int err_c = posix_memalign((void **)&c, 64, sizeof(double[N][N]));
+    #ifdef ALIGN
+        int err_a = posix_memalign((void **)&a, 64, sizeof(double[N][N]));
+        int err_b = posix_memalign((void **)&b, 64, sizeof(double[N][N]));
+        int err_c = posix_memalign((void **)&c, 64, sizeof(double[N][N]));
 
         if (err_a != 0 || err_b != 0 || err_c != 0) {
             fprintf(stderr, "Aligned memory allocation failed.\n");
@@ -75,17 +74,16 @@ int main() {
                 CblasNoTrans,    // Do not transpose B
                 N, N, N,         // M, N, K (Matrix dimensions)
                 1.0,             // Alpha multiplier
-                (double *)a, N,  // Matrix A and its leading dimension
-                (double *)b, N,  // Matrix B and its leading dimension
+                (double *)a, N,  // Matrix A and its dimension
+                (double *)b, N,  // Matrix B and its dimension
                 0.0,             // Beta multiplier
-                (double *)c, N); // Matrix C and its leading dimension
+                (double *)c, N); // Matrix C and its dimension
 
     /* 8. STOP TIMER & REPORT */
     #ifdef TIME
         clock_gettime(CLOCK_MONOTONIC, &end);
         double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         
-        // Formatted exactly to match your benchmark.sh script output scraper
         printf("[mkl-dgemm] N=%d | elapsed=%.3f s\n", 
                 N, time_taken);
     #endif

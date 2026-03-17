@@ -45,7 +45,6 @@ int main(int argc, char *argv[]) {
     /* 3. CREATE COMMUNICATORS WITH PERIODIC BOUNDARIES */
     MPI_Comm cart_comm;
     int dims[2] = {p, p};
-    // CRITICAL: Cannon's algorithm requires wrap-around links to shift data in rings
     int periods[2] = {1, 1}; 
     
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 1, &cart_comm);
@@ -65,15 +64,15 @@ int main(int argc, char *argv[]) {
     double * PTR_RESTRICT local_b;
     double * PTR_RESTRICT local_c;
 
-#ifdef ALIGN
-    posix_memalign((void **)&local_a, 64, elements * sizeof(double));
-    posix_memalign((void **)&local_b, 64, elements * sizeof(double));
-    posix_memalign((void **)&local_c, 64, elements * sizeof(double));
-#else
-    local_a = malloc(elements * sizeof(double));
-    local_b = malloc(elements * sizeof(double));
-    local_c = malloc(elements * sizeof(double));
-#endif
+    #ifdef ALIGN
+        posix_memalign((void **)&local_a, 64, elements * sizeof(double));
+        posix_memalign((void **)&local_b, 64, elements * sizeof(double));
+        posix_memalign((void **)&local_c, 64, elements * sizeof(double));
+    #else
+        local_a = malloc(elements * sizeof(double));
+        local_b = malloc(elements * sizeof(double));
+        local_c = malloc(elements * sizeof(double));
+    #endif
 
     /* 5. LOCAL INITIALIZATION */
     for (size_t i = 0; i < elements; i++) {
@@ -83,10 +82,10 @@ int main(int argc, char *argv[]) {
     }
 
     MPI_Barrier(cart_comm); 
-#ifdef TIME
-    struct timespec start, end;
-    if (cart_rank == 0) clock_gettime(CLOCK_MONOTONIC, &start);
-#endif
+    #ifdef TIME
+        struct timespec start, end;
+        if (cart_rank == 0) clock_gettime(CLOCK_MONOTONIC, &start);
+    #endif
 
     /* 6. INITIAL SKEWING PHASE */
     int left, right, up, down;
@@ -109,9 +108,9 @@ int main(int argc, char *argv[]) {
             for (int k = 0; k < b; k++) {
                 double r = local_a[i * b + k];
                 
-#ifdef ALIGN
-#pragma vector aligned
-#endif
+                #ifdef ALIGN
+                    #pragma vector aligned
+                #endif
                 for (int j = 0; j < b; j++) {
                     local_c[i * b + j] += r * local_b[k * b + j];
                 }
@@ -129,27 +128,15 @@ int main(int argc, char *argv[]) {
     }
 
     /* 8. STOP TIMER & REPORT */
-#ifdef TIME
-    MPI_Barrier(cart_comm); 
-    if (cart_rank == 0) {
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-        
-        printf("[mpi-cannon] N=%d, ALIGN=%d, RESTRICT=%d | elapsed=%.3f s\n", 
-                N, 
-#ifdef ALIGN
-                1, 
-#else
-                0, 
-#endif
-#ifdef RESTRICT
-                1, 
-#else
-                0,
-#endif
-                time_taken);
-    }
-#endif
+    #ifdef TIME
+        MPI_Barrier(cart_comm); 
+        if (cart_rank == 0) {
+            clock_gettime(CLOCK_MONOTONIC, &end);
+            double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+            
+            printf("[mpi-cannon] N=%d | elapsed=%.3f s\n", N, time_taken);
+        }
+    #endif
 
     /* 9. CLEANUP */
     free(local_a); free(local_b); free(local_c);

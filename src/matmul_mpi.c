@@ -1,49 +1,3 @@
-/* * ======================================================================================
- * OPTIMIZED MPI MATRIX MULTIPLICATION (1D SLAB DECOMPOSITION)
- * ======================================================================================
- * * ALGORITHM EXPLAINED:
- * 1. Decomposition: We slice Matrix A and C by rows (Horizontal Slabs).
- * - Why? C stores arrays in row-major order. Sending rows is a single continuous
- * memory copy, which maximizes bandwidth and cache efficiency.
- * 2. Broadcast: Matrix B is sent to ALL nodes.
- * - Why? B is small enough (~200MB) to fit in RAM on both machines.
- * - Avoiding complex 2D algorithms saves significant synchronization overhead.
- * 3. Local Compute: Each node calculates a slice of C using a Tiled, Vectorized kernel.
- * * * COMPILATION INSTRUCTIONS:
- * -------------------------
- * * MACHINE 1: INTEL i9-12900K ("Machine 210")
- * mpicc -O3 -march=native -funroll-loops -DENABLE_TIMING matmul_mpi_opt.c -o matmul_mpi
- * (Ensure mpicc wraps 'icx' or 'gcc' with AVX2 support)
- * * * MACHINE 2: AMD RYZEN 9 7900X ("Machine AMD")
- * mpicc -O3 -march=native -mprefer-vector-width=512 -funroll-loops -DENABLE_TIMING matmul_mpi_opt.c -o matmul_mpi
- * (Ensure mpicc wraps 'gcc' or 'aocc' with AVX-512 support)
- * * * EXECUTION INSTRUCTIONS (CRITICAL FOR PERFORMANCE):
- * --------------------------------------------------
- * * MACHINE 1 (Intel Hybrid Architecture):
- * The i9-12900K has 8 fast P-cores (16 threads) and 8 slow E-cores.
- * MPI is synchronous; if one rank lands on an E-core, ALL ranks wait for it.
- * DO NOT use -np 24. Use only the P-cores.
- * * Command: mpirun -np 16 --bind-to core ./matmul_mpi
- * * * MACHINE 2 (AMD Chiplet Architecture):
- * The Ryzen 7900X has 12 powerful cores (24 threads) across 2 dies.
- * We want to use all cores and lock them to preserve L3 cache locality.
- * * Command: mpirun -np 12 --bind-to core ./matmul_mpi
- * or mpirun -np 24 --use-hwthread-cpus --bind-to hwthread ./bin/matmul_mpi
- * --------------------------------------------------
- * * TESTING TO DO:
- * - Compare performance with different number of processes (e.g., np=8,16,24) and running on cores or hwthreads
- * - Compare performance when using both E and P cores on Intel (np=24).
- * - Compare performance with and without core affinity
- * --------------------------------------------------
- * * TO BE DONE:
- * - This solution is good, but cannot scale too well on N. Test implementation with 2D decomposition. (Cannon's or SUMMA)
- * - Test overlapping communication and computation using MPI_Ibcast and MPI_Iscatterv.
- * - Test using MPI derived datatypes to send rows instead of 1D flat arrays.
- * - Test using MPI_Reduce_scatter to combine communication and reduction of C.
- * - Test using MPI 3 shared memory windows for B to avoid explicit broadcast.
- * * ======================================================================================
- */
-
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,7 +21,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    /* 2. DYNAMIC ROW DISTRIBUTION (Solving the division problem) */
+    /* 2. DYNAMIC ROW DISTRIBUTION */
     int base_rows = N / size;
     int remainder = N % size;
     

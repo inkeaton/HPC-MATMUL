@@ -1,33 +1,3 @@
-/* * ======================================================================================
- * OPTIMIZED SEQUENTIAL MATRIX MULTIPLICATION (GEMM)
- * ======================================================================================
- * * COMPILATION INSTRUCTIONS:
- * -------------------------
- * * MACHINE 1: INTEL i9-12900K ("Machine 210")
- * Flags: -O3 -march=native -funroll-loops -DENABLE_TIMING
- * Command: 
- * gcc -O3 -march=native -funroll-loops -DENABLE_TIMING matmul_opt_seq.c -o matmul_seq
- * or icx -O3 -xHost -qopt-zmm-usage=high -funroll-loops -DENABLE_TIMING matmul_opt_seq.c -o matmul_seq
- * * MACHINE 2: AMD RYZEN 9 7900X ("Machine AMD")
- * Flags: -O3 -march=native -mprefer-vector-width=512 -funroll-loops -DENABLE_TIMING
- * Command:
- * gcc -O3 -march=native -mprefer-vector-width=512 -funroll-loops -DENABLE_TIMING matmul_opt_seq.c -o matmul_seq
- * ---------------------------------------------
- * * EXECUTION INSTRUCTIONS:
- * ---------------------------------------------
- * * MACHINE 1 (Intel Hybrid Architecture):
- * Must pin to a P-Core (Cores 0-15) to avoid slow E-Cores.
- * Command: taskset -c 0 ./matmul_seq
- * * MACHINE 2 (AMD Chiplet Architecture):
- * Pin to a single Core Complex (CCX) to avoid L3 cache thrashing across dies.
- * Command: taskset -c 0 ./matmul_seq
- * ---------------------------------------------
- * * TESTING TO DO:
- * - Compare performance with different BLOCK_SIZE values (e.g., 32, 64, 128).
- * - Compare performance with different compiler flags (e.g., -O2, -O3, etc).
- * - compare performance with different alignment values in aligned_alloc (e.g., 32, 64, 128).
- * * ======================================================================================
- */
 
 #include <stdio.h>
 #include <stdlib.h>
